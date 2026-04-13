@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AppLembreteMedicacao.Views.ConfirmacaoPage"
+             Title="Confirmação de Dose"
+             BackgroundColor="#F5F5F5">
+
+    <VerticalStackLayout Spacing="25" Padding="30" VerticalOptions="Center">
+
+        <Image Source="pill_icon.png" HeightRequest="100" HorizontalOptions="Center" />
+
+        <Label x:Name="lblMensagem"
+               Text="Carregando informações..."
+               FontSize="20"
+               FontAttributes="Bold"
+               TextColor="#333"
+               HorizontalTextAlignment="Center" />
+
+        <Label Text="Você tomou este medicamento agora?"
+               FontSize="16"
+               TextColor="#666"
+               HorizontalTextAlignment="Center" />
+
+        <Button Text="Sim, eu tomei"
+                Clicked="OnSimClicked"
+                BackgroundColor="#28A745"
+                TextColor="White"
+                HeightRequest="60"
+                CornerRadius="10"
+                FontSize="18" />
+
+        <Button Text="Não tomei"
+                Clicked="OnNaoClicked"
+                BackgroundColor="#DC3545"
+                TextColor="White"
+                HeightRequest="60"
+                CornerRadius="10"
+                FontSize="18" />
+
+        <Button Text="Cancelar"
+                Clicked="OnCancelarClicked"
+                BackgroundColor="Transparent"
+                TextColor="#666"
+                BorderColor="#666"
+                BorderWidth="1" />
+
+    </VerticalStackLayout>
+</ContentPage>

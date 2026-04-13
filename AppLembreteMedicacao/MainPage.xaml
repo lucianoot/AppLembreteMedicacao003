@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AppLembreteMedicacao.MainPage"
+             Title="Meu Remédio">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Compartilhar Prontuário" 
+                     Clicked="ToolbarItem_Clicked_1" 
+                     Order="Primary" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="15">
+            <Label Text="Cadastro de Remédio" FontSize="24" HorizontalOptions="Center" FontAttributes="Bold" />
+
+            <Entry x:Name="entNome" Placeholder="Nome do Remédio"/>
+            <Entry x:Name="entDose" Placeholder="Dosagem (ex: 500mg)"/>
+
+            <Label Text="Data de Início:" />
+            <DatePicker x:Name="dtInicio" Format="dd/MM/yyyy"/>
+
+            <Label Text="Data Final:" />
+            <DatePicker x:Name="dtFim" Format="dd/MM/yyyy"/>
+
+            <Button Text="Salvar" Clicked="AoClicarSalvar"
+                    BackgroundColor="#27ae60" TextColor="White"/>
+
+            <Button Text="Novo Remédio" Clicked="AoClicarNovoRemedio"
+                    BackgroundColor="#27ae60" TextColor="White"/>
+
+
+
+            <Button x:Name="btnCronograma"
+            Text="Ver Último Cronograma"
+            Clicked="AoClicarCronograma"
+            BackgroundColor="#6A0DAD"
+            TextColor="White"
+            CornerRadius="10"
+            HeightRequest="50"
+            Margin="0,10,0,0"/>
+            
+            
+
+            <Label Text="Toque no remédio para gerenciar horários:" FontAttributes="Italic" FontSize="12" HorizontalOptions="Center" />
+
+            <CollectionView x:Name="listaMedicamentos" 
+                            EmptyView="Nenhum remédio cadastrado ainda."
+                            SelectionMode="Single"
+                            SelectionChanged="OnMedicamentoSelecionado">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame BorderColor="#27ae60" CornerRadius="10" Margin="0,5" Padding="10">
+                            <HorizontalStackLayout Spacing="15">
+                                <VerticalStackLayout VerticalOptions="Center">
+                                    <Label Text="{Binding Nome}" FontAttributes="Bold" FontSize="18" />
+                                    <Label Text="{Binding Dosagem}" FontSize="14" TextColor="Gray" />
+                                </VerticalStackLayout>
+
+                                <Label Text="➔" 
+                                       VerticalOptions="Center" 
+                                       HorizontalOptions="EndAndExpand" 
+                                       TextColor="#27ae60" 
+                                       FontSize="20" />
+                            </HorizontalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
