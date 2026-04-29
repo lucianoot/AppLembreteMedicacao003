@@ -8,6 +8,7 @@
         <Entry x:Name="txtNome" Placeholder="Nome"/>
 
         <Entry x:Name="txtEmail" Placeholder="Email" Keyboard="Email"/>
+        <Entry x:Name="txtSenha" Placeholder="Senha" IsPassword="True"/>
 
         <Picker x:Name="pickerPerfil" Title="Tipo de Perfil">
             <Picker.Items>

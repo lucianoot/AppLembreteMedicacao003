@@ -17,9 +17,10 @@ namespace AppLembreteMedicacao.Models
 
         [NotNull, Unique]
         public string Email { get; set; }
-
+       
         [NotNull]
-        public string SenhaHash { get; set; }
+        public string TipoPerfil { get; set; }
+        public string? SenhaHash { get; set; }
 
         public int Ativo { get; set; } = 1;
     }

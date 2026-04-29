@@ -30,16 +30,26 @@ namespace AppLembreteMedicacao.Views
             {
                 Nome = txtNome.Text,
                 Email = txtEmail.Text,
+                SenhaHash = "123",
                 TipoPerfil = pickerPerfil.SelectedItem.ToString()
+
             };
+            try
+            {
+                await App.Banco.InsertUsuario(usuario);
 
-            await App.Banco.InsertUsuario(usuario);
+                await DisplayAlert("Sucesso", "Usuário cadastrado!", "OK");
+                txtNome.Text = "";
+                txtEmail.Text = "";
+                pickerPerfil.SelectedIndex = -1;
+                // IR PARA TELA DE MEDICAMENTO
+                await Navigation.PushAsync(new Novomedicacao());
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Erro", ex.Message, "OK");
+            }
 
-            await DisplayAlert("Sucesso", "Usuário cadastrado!", "OK");
-
-            txtNome.Text = "";
-            txtEmail.Text = "";
-            pickerPerfil.SelectedIndex = -1;
         }
     }
 }

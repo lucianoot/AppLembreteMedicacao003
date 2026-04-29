@@ -19,7 +19,7 @@ public partial class App : Application
             Banco = new SQLiteDatabaseHelper(caminho);
         }
 
-        MainPage = new NavigationPage(new MainPage());
+        MainPage = new NavigationPage(new CadastroUsuario());
 
         // Escuta o clique na notificação
         LocalNotificationCenter.Current.NotificationActionTapped += OnNotificationTapped;
