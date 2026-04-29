@@ -22,7 +22,7 @@ public partial class AdicionarHorarioPage : ContentPage
     private async void Adicionar_Clicked(object sender, EventArgs e)
     {
         string hora = timePicker.Time.ToString(@"hh\:mm");
-        string frequencia = pickerFrequencia.SelectedItem?.ToString() ?? "Diária";
+        string frequencia = pickerFrequencia.SelectedItem?.ToString() ?? "diária";
 
         var novoCronograma = new Cronograma
         {

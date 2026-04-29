@@ -17,8 +17,8 @@
 
             <Picker x:Name="pickerFrequencia" Title="Frequência">
                 <Picker.Items>
-                    <x:String>Diária</x:String>
-                    <x:String>Semanal</x:String>
+                    <x:String>diária</x:String>
+                    <x:String>semanal</x:String>
                 </Picker.Items>
             </Picker>
 
