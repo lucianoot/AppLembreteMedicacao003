@@ -51,5 +51,10 @@ namespace AppLembreteMedicacao.Views
             }
 
         }
+        // BOTÃO "JÁ SOU CADASTRADO"
+        private async void OnLoginClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new Login());
+        }
     }
 }
