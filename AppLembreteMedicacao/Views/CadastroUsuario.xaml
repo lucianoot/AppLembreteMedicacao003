@@ -1,32 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="AppLembreteMedicacao.Views.CadastroUsuario"
-             Title="CadastroUsuario">
-    
-        <VerticalStackLayout Padding="30" Spacing="15">
+             Title="CadastroUsuario"
+              BackgroundColor="White">
 
-        <Entry x:Name="txtNome" Placeholder="Nome"/>
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="20">
 
-        <Entry x:Name="txtEmail" Placeholder="Email" Keyboard="Email"/>
-        <Entry x:Name="txtSenha" Placeholder="Senha" IsPassword="True"/>
+            <!--Título -->
+            <Label Text="Criar Conta"
+                   FontSize="26"
+                   FontAttributes="Bold"
+                   TextColor="#2563EB"
+                   HorizontalOptions="Center"/>
 
-        <Picker x:Name="pickerPerfil" Title="Tipo de Perfil">
-            <Picker.Items>
-                <x:String>Paciente</x:String>
-                <x:String>Responsável</x:String>
-                <x:String>Administrador</x:String>
-            </Picker.Items>
-        </Picker>
+            <!-- Nome -->
+            <Entry x:Name="txtNome"
+                   Placeholder="Nome completo"
+                   BackgroundColor="#F3F4F6"
+                   TextColor="Black"
+                   HeightRequest="50"/>
 
-        <Button Text="Salvar"
-            Clicked="OnSalvarClicked"
-            BackgroundColor="#512BD4"
-            TextColor="White"
-            Margin="0,20,0,0" />
-        <Button Text="Já sou cadastrado"
+            <!-- Email -->
+            <Entry x:Name="txtEmail"
+                   Placeholder="Email"
+                   Keyboard="Email"
+                   BackgroundColor="#F3F4F6"
+                   TextColor="Black"
+                   HeightRequest="50"/>
+
+            <!-- Perfil -->
+            <Picker x:Name="pickerPerfil"
+                    Title="Tipo de Perfil"
+                    TextColor="Black"
+                    BackgroundColor="#F3F4F6"
+                    HeightRequest="50">
+                <Picker.Items>
+                    <x:String>Paciente</x:String>
+                    <x:String>Responsável</x:String>
+                    <x:String>Médico</x:String>
+                </Picker.Items>
+            </Picker>
+
+            <!-- Botão Salvar -->
+            <Button Text="Cadastrar"
+                    Clicked="OnSalvarClicked"
+                    BackgroundColor="#2563EB"
+                    TextColor="White"
+                    CornerRadius="10"
+                    HeightRequest="50"/>
+
+            <!-- Já tem conta -->
+            <Button Text="Já sou cadastrado"
         Clicked="OnLoginClicked"
-        BackgroundColor="Gray"
-        TextColor="White"/>
+        BackgroundColor="White"
+        TextColor="#2563EB"
+        BorderColor="#2563EB"
+        BorderWidth="2"
+        CornerRadius="10"
+        HeightRequest="50"/>
 
-    </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

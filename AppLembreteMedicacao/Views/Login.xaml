@@ -2,19 +2,37 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="AppLembreteMedicacao.Views.Login"
-             Title="Login">
-    <VerticalStackLayout Padding="30" Spacing="15">
+             Title="Login"             
+             BackgroundColor="White">
 
-        <Entry x:Name="txtEmail" Placeholder="Email"/>
+    <VerticalStackLayout Padding="30" Spacing="20">
+
+        <Label Text="Entrar"
+               FontSize="26"
+               FontAttributes="Bold"
+               TextColor="#2563EB"
+               HorizontalOptions="Center"/>
+
+        <Entry x:Name="txtEmail"
+               Placeholder="Email"
+               Keyboard="Email"
+               TextColor="Black"
+               BackgroundColor="#F3F4F6"
+               HeightRequest="50"/>
 
         <Entry x:Name="txtSenha"
                Placeholder="Senha"
-               IsPassword="True"/>
+               IsPassword="True"
+               TextColor="Black"
+               BackgroundColor="#F3F4F6"
+               HeightRequest="50"/>
 
         <Button Text="Entrar"
                 Clicked="OnLoginClicked"
-                BackgroundColor="#512BD4"
-                TextColor="White"/>
+                BackgroundColor="#2563EB"
+                TextColor="White"
+                CornerRadius="10"
+                HeightRequest="50"/>
 
     </VerticalStackLayout>
 </ContentPage>
