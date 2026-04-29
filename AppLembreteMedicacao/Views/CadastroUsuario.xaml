@@ -1,0 +1,27 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="AppLembreteMedicacao.Views.CadastroUsuario"
+             Title="CadastroUsuario">
+    
+        <VerticalStackLayout Padding="30" Spacing="15">
+
+        <Entry x:Name="txtNome" Placeholder="Nome"/>
+
+        <Entry x:Name="txtEmail" Placeholder="Email" Keyboard="Email"/>
+
+        <Picker x:Name="pickerPerfil" Title="Tipo de Perfil">
+            <Picker.Items>
+                <x:String>Paciente</x:String>
+                <x:String>Responsável</x:String>
+                <x:String>Administrador</x:String>
+            </Picker.Items>
+        </Picker>
+
+        <Button Text="Salvar"
+            Clicked="OnSalvarClicked"
+            BackgroundColor="#512BD4"
+            TextColor="White"
+            Margin="0,20,0,0" />
+
+        </VerticalStackLayout>
+</ContentPage>

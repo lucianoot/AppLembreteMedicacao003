@@ -57,5 +57,13 @@ namespace AppLembreteMedicacao.Helpers
         public Task<int> InsertUsuario(Usuario u) => _conn.InsertAsync(u);
         public Task<Usuario> GetUsuarioEmail(string email) =>
             _conn.Table<Usuario>().Where(u => u.Email == email).FirstOrDefaultAsync();
+        public async Task<bool> UsuarioExiste(string email)
+        {
+            var usuario = await _conn.Table<Usuario>()
+                                     .Where(u => u.Email == email)
+                                     .FirstOrDefaultAsync();
+
+            return usuario != null;
+        }
     }
 }
