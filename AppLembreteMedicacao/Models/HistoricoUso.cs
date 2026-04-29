@@ -10,5 +10,6 @@ namespace AppLembreteMedicacao.Models
         public DateTime DataUso { get; set; }
         public bool Tomado { get; set; }
         public string NomeMedicamento { get; set; } // Auxiliar para relatórios
+        
     }
 }

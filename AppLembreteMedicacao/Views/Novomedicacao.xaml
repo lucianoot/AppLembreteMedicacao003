@@ -28,6 +28,12 @@
             BackgroundColor="#512BD4"
             TextColor="White"
             Margin="0,20,0,0" />
+        
+        <Button Text="Ver Histórico"
+        Clicked="OnMonitoramentoClicked"
+        BackgroundColor="#2563EB"
+        TextColor="White"
+        CornerRadius="10"/>
 
     </VerticalStackLayout>
 </ContentPage>

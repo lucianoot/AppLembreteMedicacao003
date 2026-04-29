@@ -46,12 +46,10 @@ namespace AppLembreteMedicacao.Helpers
 
         // --- HISTÓRICO ---
         public Task<int> InsertHistorico(HistoricoUso h) => _conn.InsertAsync(h);
-
-        public Task<List<HistoricoUso>> GetHistorico(int medicamentoId) =>
-            _conn.Table<HistoricoUso>()
-                 .Where(h => h.MedicamentoId == medicamentoId)
-                 .OrderByDescending(h => h.DataUso)
-                 .ToListAsync();
+        public Task<List<HistoricoUso>> GetTodosHistorico() =>
+     _conn.Table<HistoricoUso>()
+          .OrderByDescending(h => h.DataUso)
+          .ToListAsync();
 
         // --- USUÁRIO ---
         public Task<int> InsertUsuario(Usuario u) => _conn.InsertAsync(u);

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AppLembreteMedicacao.Views.Monitoramento"
+             Title="Monitoramento"
+             BackgroundColor="White">
+
+    <VerticalStackLayout Padding="20">
+
+        <Label Text="Histórico de Uso"
+               FontSize="24"
+               FontAttributes="Bold"
+               TextColor="#2563EB"
+               HorizontalOptions="Center"/>
+
+        <CollectionView x:Name="listaHistorico">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="5"
+                           Padding="10"
+                           CornerRadius="10"
+                           BorderColor="#2563EB">
+
+                        <VerticalStackLayout>
+
+                       
+                            <Label Text="{Binding NomeMedicamento}"
+                           FontAttributes="Bold"
+                           TextColor="#2563EB"/>
+                           
+                           <Label Text="{Binding DataUso}"
+                           TextColor="Black"/>
+                              
+                           <Label Text="{Binding TomadoTexto}"
+                           FontAttributes="Bold"/>
+
+                        </VerticalStackLayout>
+
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </VerticalStackLayout>
+</ContentPage>

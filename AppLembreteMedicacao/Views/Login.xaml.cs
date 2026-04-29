@@ -30,7 +30,15 @@ public partial class Login : ContentPage
 
         await DisplayAlert("Sucesso", "Login realizado!", "OK");
 
-        //Ir para tela de medicamento
-        await Navigation.PushAsync(new Novomedicacao());
+        // Redirecionamento por perfil
+        if (usuario.TipoPerfil == "Paciente")
+        {
+            await Navigation.PushAsync(new Novomedicacao());
+        }
+        else
+        {
+            await Navigation.PushAsync(new Monitoramento());
+        }
+        
     }
 }

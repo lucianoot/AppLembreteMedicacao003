@@ -8,7 +8,10 @@ public partial class Novomedicacao : ContentPage
     {
         InitializeComponent();
     }
-
+    private async void OnMonitoramentoClicked(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new Monitoramento());
+    }
     async void OnSalvarClicked(object sender, EventArgs e)
     {
         // objeto com os dados da tela
