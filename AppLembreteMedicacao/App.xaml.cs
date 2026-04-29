@@ -2,6 +2,7 @@
 using AppLembreteMedicacao.Views;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.EventArgs;
+using Microsoft.Maui.Storage;
 
 namespace AppLembreteMedicacao;
 
@@ -19,7 +20,19 @@ public partial class App : Application
             Banco = new SQLiteDatabaseHelper(caminho);
         }
 
-        MainPage = new NavigationPage(new CadastroUsuario());
+        // VERIFICA SE JÁ TEM USUÁRIO LOGADO
+        string email = Preferences.Get("usuarioLogado", "");
+
+        if (!string.IsNullOrEmpty(email))
+        {
+            // Já está logado → vai direto pro app
+            MainPage = new NavigationPage(new Novomedicacao());
+        }
+        else
+        {
+            // Não está logado → vai pro login
+            MainPage = new NavigationPage(new Login());
+        }
 
         // Escuta o clique na notificação
         LocalNotificationCenter.Current.NotificationActionTapped += OnNotificationTapped;
@@ -29,7 +42,6 @@ public partial class App : Application
     {
         if (string.IsNullOrWhiteSpace(e.Request.ReturningData)) return;
 
-        // Extrai o ID (ex: "id=5")
         var idStr = e.Request.ReturningData.Replace("id=", "");
 
         if (int.TryParse(idStr, out int idMed))
@@ -39,7 +51,6 @@ public partial class App : Application
                 var navPage = MainPage as NavigationPage;
                 if (navPage != null)
                 {
-                    // Abre a tela de confirmação passando o ID
                     await navPage.PushAsync(new ConfirmacaoPage(idMed));
                 }
             });

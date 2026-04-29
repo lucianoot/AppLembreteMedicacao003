@@ -25,6 +25,8 @@ public partial class Login : ContentPage
             await DisplayAlert("Erro", "Email ou senha inválidos", "OK");
             return;
         }
+        // SALVA USUÁRIO LOGADO
+        Preferences.Set("usuarioLogado", usuario.Email);
 
         await DisplayAlert("Sucesso", "Login realizado!", "OK");
 
