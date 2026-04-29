@@ -45,11 +45,27 @@ namespace AppLembreteMedicacao.Helpers
         public Task<int> DeleteCronograma(int id) => _conn.DeleteAsync<Cronograma>(id);
 
         // --- HISTÓRICO ---
+        public Task<int> SalvarHistorico(HistoricoUso historico)
+        {
+            return _conn.InsertAsync(historico);
+        }
         public Task<int> InsertHistorico(HistoricoUso h) => _conn.InsertAsync(h);
-        public Task<List<HistoricoUso>> GetTodosHistorico() =>
-     _conn.Table<HistoricoUso>()
-          .OrderByDescending(h => h.DataUso)
-          .ToListAsync();
+        // PARA O PACIENTE (Filtra por um remédio específico)
+        public Task<List<HistoricoUso>> GetHistorico(int medicamentoId)
+        {
+            return _conn.Table<HistoricoUso>()
+                        .Where(h => h.MedicamentoId == medicamentoId)
+                        .OrderByDescending(h => h.DataUso)
+                        .ToListAsync();
+        }
+
+        // PARA O MÉDICO/RESPONSÁVEL (Mostra tudo de todos os remédios)
+        public Task<List<HistoricoUso>> GetTodosHistorico()
+        {
+            return _conn.Table<HistoricoUso>()
+                        .OrderByDescending(h => h.DataUso)
+                        .ToListAsync();
+        }
 
         // --- USUÁRIO ---
         public Task<int> InsertUsuario(Usuario u) => _conn.InsertAsync(u);

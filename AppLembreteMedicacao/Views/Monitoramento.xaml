@@ -5,42 +5,37 @@
              Title="Monitoramento"
              BackgroundColor="White">
 
-    <VerticalStackLayout Padding="20">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Sair" Clicked="OnSairClicked" />
+    </ContentPage.ToolbarItems>
 
-        <Label Text="Histórico de Uso"
-               FontSize="24"
+    <VerticalStackLayout Padding="20" Spacing="10">
+        <Label Text="Histórico de Medicamentos"
+               FontSize="22"
                FontAttributes="Bold"
                TextColor="#2563EB"
-               HorizontalOptions="Center"/>
+               HorizontalOptions="Center" />
 
-        <CollectionView x:Name="listaHistorico">
-
+        <CollectionView x:Name="listaHistorico" Margin="0,10">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Frame Margin="5"
-                           Padding="10"
-                           CornerRadius="10"
-                           BorderColor="#2563EB">
-
+                    <Frame Margin="0,5" Padding="10" CornerRadius="10" BorderColor="#2563EB">
                         <VerticalStackLayout>
+                            <Label Text="{Binding NomeMedicamento}" 
+                                   FontAttributes="Bold" 
+                                   FontSize="16" 
+                                   TextColor="#2563EB"/>
 
-                       
-                            <Label Text="{Binding NomeMedicamento}"
-                           FontAttributes="Bold"
-                           TextColor="#2563EB"/>
-                           
-                           <Label Text="{Binding DataUso}"
-                           TextColor="Black"/>
-                              
-                           <Label Text="{Binding TomadoTexto}"
-                           FontAttributes="Bold"/>
+                            <Label Text="{Binding DataUso}" 
+                                   TextColor="Black" />
 
+                            <Label Text="{Binding TomadoTexto}" 
+                                   FontAttributes="Bold" 
+                                   TextColor="{Binding CorStatus}"/>
                         </VerticalStackLayout>
-
                     </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-
     </VerticalStackLayout>
 </ContentPage>

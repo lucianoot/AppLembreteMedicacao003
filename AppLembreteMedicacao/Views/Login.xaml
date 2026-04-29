@@ -33,6 +33,11 @@
                 TextColor="White"
                 CornerRadius="10"
                 HeightRequest="50"/>
+        
+        <Button Text="Criar Nova Conta" 
+                BackgroundColor="#2563EB"
+                TextColor="#2563EB"
+                Clicked="OnCadastroClicked" />
 
     </VerticalStackLayout>
 </ContentPage>

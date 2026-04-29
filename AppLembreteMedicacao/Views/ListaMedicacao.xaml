@@ -2,11 +2,78 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="AppLembreteMedicacao.Views.ListaMedicacao"
-             Title="ListaMedicacao">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="Meus Remédios"
+             BackgroundColor="White">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Sair" Clicked="OnSairClicked" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="Auto, *, Auto" Padding="20">
+
+        <Label Grid.Row="0" 
+               Text="Minha Rotina"
+               FontSize="26"
+               FontAttributes="Bold"
+               TextColor="#2563EB"
+               HorizontalOptions="Start"
+               Margin="0,0,0,20"/>
+
+        <CollectionView x:Name="listaMedicamentos" Grid.Row="1">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="0,0,0,12" 
+                           Padding="15" 
+                           CornerRadius="10" 
+                           BackgroundColor="#F3F4F6" 
+                           BorderColor="Transparent"
+                           HasShadow="False">
+
+                        <Grid ColumnDefinitions="*, Auto">
+                            <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
+                                <Label Text="{Binding Nome}" 
+                                       FontSize="18" 
+                                       FontAttributes="Bold" 
+                                       TextColor="Black" />
+                                <Label Text="{Binding Dosagem}" 
+                                       TextColor="#4B5563" />
+                            </VerticalStackLayout>
+
+                            <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
+                                <Button Text="TOMAR" 
+                                        Clicked="OnTomarClicked" 
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="#2563EB" 
+                                        TextColor="White"
+                                        FontAttributes="Bold"
+                                        CornerRadius="8"
+                                        HeightRequest="45"/>
+
+                                <Button Text="🕒" 
+                                        Clicked="OnVerHistoricoClicked" 
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="White" 
+                                        TextColor="#2563EB"
+                                        BorderColor="#2563EB"
+                                        BorderWidth="1"
+                                        CornerRadius="8"
+                                        WidthRequest="50"
+                                        HeightRequest="45"/>
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Button Grid.Row="2" 
+                Text="+ Nova Medicação" 
+                Clicked="OnNovaMedicacaoClicked"
+                BackgroundColor="#2563EB" 
+                TextColor="White" 
+                FontAttributes="Bold"
+                HeightRequest="55" 
+                CornerRadius="12"
+                Margin="0,10,0,0" />
+    </Grid>
 </ContentPage>
