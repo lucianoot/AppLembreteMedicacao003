@@ -29,16 +29,17 @@ public partial class ConfirmacaoPage : ContentPage
 
     private async void OnSimClicked(object sender, EventArgs e)
     {
-        await SalvarNoHistorico(true);
+        await ProcessarAcao(true);
     }
 
     private async void OnNaoClicked(object sender, EventArgs e)
     {
-        await SalvarNoHistorico(false);
+        await ProcessarAcao(false);
     }
 
-    private async Task SalvarNoHistorico(bool foiTomado)
+    private async Task ProcessarAcao(bool foiTomado)
     {
+        // 1. REGISTRO NO HISTÓRICO (Para relatórios/CRUD)
         var historico = new HistoricoUso
         {
             MedicamentoId = _medicamentoId,
@@ -46,14 +47,27 @@ public partial class ConfirmacaoPage : ContentPage
             DataUso = DateTime.Now,
             Tomado = foiTomado
         };
-
         await App.Banco.InsertHistorico(historico);
 
-        string msg = foiTomado ? "Dose registrada com sucesso!" : "Registro de dose perdida salvo.";
+        // 2. ATUALIZAÇÃO DA TABELA DOSE 
+        // Buscamos as doses do remédio e pegamos a primeira que ainda está "Pendente"
+        var doses = await App.Banco.GetDosesPorMedicamento(_medicamentoId);
+        var doseParaAtualizar = doses.FirstOrDefault(d => d.Status == "Pendente");
+
+        if (doseParaAtualizar != null)
+        {
+            // Apenas atualizamos o Status para Tomado ou Perdido
+            doseParaAtualizar.Status = foiTomado ? "Tomado" : "Perdido";
+
+            // Chamamos o Update do banco
+            await App.Banco.UpdateDose(doseParaAtualizar);
+        }
+
+        // 3. FEEDBACK E SAÍDA
+        string msg = foiTomado ? "Dose registrada!" : "Registro de dose perdida salvo.";
         await DisplayAlert("Pronto", msg, "OK");
 
-        // Volta para a página inicial (MainPage)
-        await Navigation.PopAsync();
+        await Navigation.PopToRootAsync();
     }
 
     private async void OnCancelarClicked(object sender, EventArgs e)

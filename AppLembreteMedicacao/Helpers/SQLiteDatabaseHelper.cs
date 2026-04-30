@@ -17,6 +17,7 @@ namespace AppLembreteMedicacao.Helpers
             _conn.CreateTableAsync<Medicamento>().Wait();
             _conn.CreateTableAsync<Cronograma>().Wait();
             _conn.CreateTableAsync<HistoricoUso>().Wait();
+            _conn.CreateTableAsync<Dose>().Wait();
         }
 
         // --- MEDICAMENTO ---
@@ -66,7 +67,32 @@ namespace AppLembreteMedicacao.Helpers
                         .OrderByDescending(h => h.DataUso)
                         .ToListAsync();
         }
+        // --- DOSE ---
+        public Task<List<Dose>> GetDosesPorMedicamento(int medId)
+        {
+            return _conn.Table<Dose>()
+                        .Where(d => d.MedicamentoId == medId)
+                        .OrderBy(d => d.HorarioPrevisto)
+                        .ToListAsync();
+        }
 
+        public Task<Dose> GetDose(int id)
+        {
+            return _conn.Table<Dose>().Where(d => d.Id == id).FirstOrDefaultAsync();
+        }
+
+        public Task<int> UpdateDose(Dose dose)
+        {
+            return _conn.UpdateAsync(dose);
+        }
+        public Task<int> InsertDoses(List<Dose> doses)
+        {
+            return _conn.InsertAllAsync(doses);
+        }
+        public Task<Dose> GetDoseById(int id)
+        {
+            return _conn.Table<Dose>().Where(d => d.Id == id).FirstOrDefaultAsync();
+        }
         // --- USUÁRIO ---
         public Task<int> InsertUsuario(Usuario u) => _conn.InsertAsync(u);
         public Task<Usuario> GetUsuarioEmail(string email) =>

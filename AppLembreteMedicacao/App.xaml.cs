@@ -1,5 +1,6 @@
 ﻿using AppLembreteMedicacao.Helpers;
 using AppLembreteMedicacao.Views;
+using AppLembreteMedicacao.Models;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.EventArgs;
 using Microsoft.Maui.Storage;
@@ -40,20 +41,26 @@ public partial class App : Application
 
     private void OnNotificationTapped(NotificationActionEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(e.Request.ReturningData)) return;
-
-        var idStr = e.Request.ReturningData.Replace("id=", "");
-
-        if (int.TryParse(idStr, out int idMed))
+        // Verificamos se há dados retornando (o ID que passamos no passo 1)
+        if (!string.IsNullOrWhiteSpace(e.Request.ReturningData)) return;
         {
-            MainThread.BeginInvokeOnMainThread(async () =>
+            if (int.TryParse(e.Request.ReturningData, out int idMed))
             {
-                var navPage = MainPage as NavigationPage;
-                if (navPage != null)
+                // Forçamos a abertura da tela de Confirmação na Thread principal
+                MainThread.BeginInvokeOnMainThread(async () =>
                 {
-                    await navPage.PushAsync(new ConfirmacaoPage(idMed));
-                }
-            });
+                    // Se o app estiver usando NavigationPage
+                    if (MainPage is NavigationPage navPage)
+                    {
+                        await navPage.PushAsync(new ConfirmacaoPage(idMed));
+                    }
+                    else
+                    {
+                        // Caso não esteja em uma NavigationPage, criamos uma
+                        MainPage = new NavigationPage(new ConfirmacaoPage(idMed));
+                    }
+                });
+            }
         }
     }
-}
+}   

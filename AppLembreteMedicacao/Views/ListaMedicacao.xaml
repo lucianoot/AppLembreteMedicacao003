@@ -5,19 +5,9 @@
              Title="Meus Remédios"
              BackgroundColor="White">
 
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Sair" Clicked="OnSairClicked" />
-    </ContentPage.ToolbarItems>
+    <Grid RowDefinitions="Auto, *" Padding="20">
 
-    <Grid RowDefinitions="Auto, *, Auto" Padding="20">
-
-        <Label Grid.Row="0" 
-               Text="Minha Rotina"
-               FontSize="26"
-               FontAttributes="Bold"
-               TextColor="#2563EB"
-               HorizontalOptions="Start"
-               Margin="0,0,0,20"/>
+        <Label Grid.Row="0" Text="Meus Medicamentos" FontSize="24" FontAttributes="Bold" TextColor="#2563EB" Margin="0,0,0,10"/>
 
         <CollectionView x:Name="listaMedicamentos" Grid.Row="1">
             <CollectionView.ItemTemplate>
@@ -26,11 +16,11 @@
                            Padding="15" 
                            CornerRadius="10" 
                            BackgroundColor="#F3F4F6" 
-                           BorderColor="Transparent"
-                           HasShadow="False">
+                           HasShadow="False"
+                           BorderColor="Transparent">
 
                         <Grid ColumnDefinitions="*, Auto">
-                            <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
+                            <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
                                 <Label Text="{Binding Nome}" 
                                        FontSize="18" 
                                        FontAttributes="Bold" 
@@ -45,9 +35,8 @@
                                         CommandParameter="{Binding .}"
                                         BackgroundColor="#2563EB" 
                                         TextColor="White"
-                                        FontAttributes="Bold"
-                                        CornerRadius="8"
-                                        HeightRequest="45"/>
+                                        HeightRequest="45"
+                                        CornerRadius="8"/>
 
                                 <Button Text="🕒" 
                                         Clicked="OnVerHistoricoClicked" 
@@ -56,24 +45,14 @@
                                         TextColor="#2563EB"
                                         BorderColor="#2563EB"
                                         BorderWidth="1"
-                                        CornerRadius="8"
                                         WidthRequest="50"
-                                        HeightRequest="45"/>
+                                        HeightRequest="45"
+                                        CornerRadius="8"/>
                             </HorizontalStackLayout>
                         </Grid>
                     </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-
-        <Button Grid.Row="2" 
-                Text="+ Nova Medicação" 
-                Clicked="OnNovaMedicacaoClicked"
-                BackgroundColor="#2563EB" 
-                TextColor="White" 
-                FontAttributes="Bold"
-                HeightRequest="55" 
-                CornerRadius="12"
-                Margin="0,10,0,0" />
     </Grid>
 </ContentPage>
