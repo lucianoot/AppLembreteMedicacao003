@@ -9,6 +9,7 @@ namespace AppLembreteMedicacao.Models
         public int MedicamentoId { get; set; }
         public DateTime HorarioPrevisto { get; set; }
         public string Status { get; set; } = "Pendente";
+        public DateTime dataHoraTomada { get; set; }
         public string NomeMedicamento { get; set; }
     }
 }

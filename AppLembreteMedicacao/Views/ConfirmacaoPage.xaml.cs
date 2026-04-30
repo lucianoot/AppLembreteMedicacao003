@@ -56,8 +56,14 @@ public partial class ConfirmacaoPage : ContentPage
 
         if (doseParaAtualizar != null)
         {
-            // Apenas atualizamos o Status para Tomado ou Perdido
+            // Atualiza o Status
             doseParaAtualizar.Status = foiTomado ? "Tomado" : "Perdido";
+
+            // ADICIONADO: Registra o horário da ação
+            if (foiTomado)
+            {
+                doseParaAtualizar.dataHoraTomada = DateTime.Now;
+            }
 
             // Chamamos o Update do banco
             await App.Banco.UpdateDose(doseParaAtualizar);
