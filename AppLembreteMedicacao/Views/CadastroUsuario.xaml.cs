@@ -1,4 +1,5 @@
 using AppLembreteMedicacao.Models;
+using AppLembreteMedicacao.Views;
 namespace AppLembreteMedicacao.Views
 {
     public partial class CadastroUsuario : ContentPage

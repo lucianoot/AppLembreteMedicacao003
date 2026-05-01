@@ -29,6 +29,14 @@
                    BackgroundColor="#F3F4F6"
                    TextColor="Black"
                    HeightRequest="50"/>
+            
+            <!-- Senha -->
+            <Entry x:Name="txtSenha"
+                   Placeholder="Crie uma senha"
+                   IsPassword="True"
+                   BackgroundColor="#F3F4F6"
+                   TextColor="Black"
+                   HeightRequest="50"/>
 
             <!-- Perfil -->
             <Picker x:Name="pickerPerfil"

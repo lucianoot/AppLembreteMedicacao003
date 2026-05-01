@@ -14,7 +14,9 @@ public partial class Novomedicacao : ContentPage
         await Navigation.PushAsync(new Monitoramento());
     }
     async void OnSalvarClicked(object sender, EventArgs e)
+
     {
+
         // objeto com os dados da tela
         var novoMed = new Medicamento
         {

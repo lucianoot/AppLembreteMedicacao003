@@ -36,7 +36,7 @@
         
         <Button Text="Criar Nova Conta" 
                 BackgroundColor="#2563EB"
-                TextColor="#2563EB"
+                TextColor="White"
                 Clicked="OnCadastroClicked" />
 
     </VerticalStackLayout>

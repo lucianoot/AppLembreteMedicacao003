@@ -27,7 +27,7 @@ public partial class App : Application
         if (!string.IsNullOrEmpty(email))
         {
             // Já está logado → vai direto pro app
-            MainPage = new NavigationPage(new Novomedicacao());
+            MainPage = new NavigationPage(new MainPage());
         }
         else
         {
@@ -50,17 +50,25 @@ public partial class App : Application
                 MainThread.BeginInvokeOnMainThread(async () =>
                 {
                     // Se o app estiver usando NavigationPage
-                    if (MainPage is NavigationPage navPage)
+                    try
                     {
-                        await navPage.PushAsync(new ConfirmacaoPage(idMed));
+                        // Se o app já estiver usando NavigationPage, apenas damos o Push
+                        if (MainPage is NavigationPage navPage)
+                        {
+                            await navPage.PushAsync(new ConfirmacaoPage(idMed));
+                        }
+                        else
+                        {
+                            // Caso a estrutura de navegação tenha se perdido, reiniciamos com a página de confirmação
+                            MainPage = new NavigationPage(new ConfirmacaoPage(idMed));
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        // Caso não esteja em uma NavigationPage, criamos uma
-                        MainPage = new NavigationPage(new ConfirmacaoPage(idMed));
+                        System.Diagnostics.Debug.WriteLine($"Erro ao navegar: {ex.Message}");
                     }
                 });
             }
         }
     }
-}   
+}

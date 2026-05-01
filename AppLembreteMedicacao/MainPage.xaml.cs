@@ -30,6 +30,7 @@ public partial class MainPage : ContentPage
         }
 
         try
+
         {
             if (_medicamentoParaEdicao == null)
             {
@@ -40,11 +41,14 @@ public partial class MainPage : ContentPage
                     Dosagem = entDose.Text,
                     DataInicio = dtInicio.Date,
                     DataFim = dtFim.Date,
+
                     Ativo = 1
                 };
 
                 await App.Banco.InsertMedicamento(novo);
 
+                // Buscamos o ID gerado pelo banco para colocar na notificação
+                var ultimo = await App.Banco.GetUltimoMedicamento();
                 // Notificação para novo cadastro
                 var notifNovo = new NotificationRequest
                 {

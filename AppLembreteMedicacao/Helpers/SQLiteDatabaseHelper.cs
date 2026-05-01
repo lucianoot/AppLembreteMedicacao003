@@ -93,6 +93,27 @@ namespace AppLembreteMedicacao.Helpers
         {
             return _conn.Table<Dose>().Where(d => d.Id == id).FirstOrDefaultAsync();
         }
+            public async Task<int> AtualizarDoseParaTomado(int medicamentoId)
+        {
+            // 1. Busca a dose mais antiga que ainda está "Pendente" para esse remédio
+            var dose = await _conn.Table<Dose>()
+                                .Where(d => d.MedicamentoId == medicamentoId && d.Status == "Pendente")
+                                .OrderBy(d => d.HorarioPrevisto)
+                                .FirstOrDefaultAsync();
+
+            if (dose != null)
+            {
+                // 2. Atualiza as informações
+                dose.Status = "Tomado";
+                dose.DataHoraTomada = DateTime.Now; // Registra o momento exato do clique
+
+                // 3. Salva a alteração no banco
+                return await _conn.UpdateAsync(dose);
+            }
+
+            return 0; // Nenhuma dose pendente encontrada
+        }
+        
         // --- USUÁRIO ---
         public Task<int> InsertUsuario(Usuario u) => _conn.InsertAsync(u);
         public Task<Usuario> GetUsuarioEmail(string email) =>

@@ -38,7 +38,7 @@ public partial class Login : ContentPage
         if (usuario.TipoPerfil == "Paciente")
         {
             // Paciente vai gerenciar seus remédios
-            await Navigation.PushAsync(new ListaMedicacao());
+            Application.Current.MainPage = new NavigationPage(new MainPage());
         }
         else if (usuario.TipoPerfil == "Médico" || usuario.TipoPerfil == "Responsável")
         {
@@ -50,11 +50,10 @@ public partial class Login : ContentPage
             // Caso o perfil seja diferente, abre a lista por padrão
             await Navigation.PushAsync(new ListaMedicacao());
         }
-    } // Aqui faltava essa chave para fechar o OnLoginClicked!
+    } 
 
     private async void OnCadastroClicked(object sender, EventArgs e)
     {
-        // Se tiver tela de cadastro, descomente a linha abaixo e ajuste o nome da View
-        // await Navigation.PushAsync(new CadastroUsuario());
+         await Navigation.PushAsync(new CadastroUsuario());
     }
 }

@@ -62,7 +62,7 @@ public partial class ConfirmacaoPage : ContentPage
             // ADICIONADO: Registra o horário da ação
             if (foiTomado)
             {
-                doseParaAtualizar.dataHoraTomada = DateTime.Now;
+                doseParaAtualizar.DataHoraTomada = DateTime.Now;
             }
 
             // Chamamos o Update do banco

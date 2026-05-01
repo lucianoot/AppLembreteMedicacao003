@@ -45,29 +45,55 @@
             <Label Text="Toque no remédio para gerenciar horários:" FontAttributes="Italic" FontSize="12" HorizontalOptions="Center" />
 
             <CollectionView x:Name="listaMedicamentos" 
+
                             EmptyView="Nenhum remédio cadastrado ainda."
+
                             SelectionMode="Single"
+
                             SelectionChanged="OnMedicamentoSelecionado">
+
                 <CollectionView.ItemTemplate>
+
                     <DataTemplate>
+
                         <Frame BorderColor="#27ae60" CornerRadius="10" Margin="0,5" Padding="10">
+
                             <HorizontalStackLayout Spacing="15">
+
                                 <VerticalStackLayout VerticalOptions="Center">
+
                                     <Label Text="{Binding Nome}" FontAttributes="Bold" FontSize="18" />
+
                                     <Label Text="{Binding Dosagem}" FontSize="14" TextColor="Gray" />
+
                                 </VerticalStackLayout>
 
+
+
                                 <Label Text="➔" 
+
                                        VerticalOptions="Center" 
+
                                        HorizontalOptions="EndAndExpand" 
+
                                        TextColor="#27ae60" 
+
                                        FontSize="20" />
+
                             </HorizontalStackLayout>
+
                         </Frame>
+
                     </DataTemplate>
+
                 </CollectionView.ItemTemplate>
+
             </CollectionView>
 
+
+
         </VerticalStackLayout>
+
     </ScrollView>
+
 </ContentPage>
