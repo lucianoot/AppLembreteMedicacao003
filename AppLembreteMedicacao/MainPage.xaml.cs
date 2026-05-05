@@ -59,6 +59,8 @@ public partial class MainPage : ContentPage
                     Schedule = new NotificationRequestSchedule { NotifyTime = DateTime.Now.AddSeconds(2) }
                 };
                 await LocalNotificationCenter.Current.Show(notifNovo);
+                // MENSAGEM DE SUCESSO
+                await DisplayAlert("Sucesso", "Medicamento cadastrado com sucesso!", "OK");
             }
             else
             {
@@ -79,6 +81,9 @@ public partial class MainPage : ContentPage
                     Schedule = new NotificationRequestSchedule { NotifyTime = DateTime.Now.AddSeconds(2) }
                 };
                 await LocalNotificationCenter.Current.Show(notifEdit);
+
+                // MENSAGEM DE SUCESSO
+                await DisplayAlert("Sucesso", "Medicamento atualizado com sucesso!", "OK");
             }
 
             // 3. Fecha a tela e volta para a lista após salvar
