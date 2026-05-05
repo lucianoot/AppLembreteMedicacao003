@@ -49,7 +49,7 @@ public partial class App : Application
             // Não está logado
             MainPage = new NavigationPage(new Login());
         }
-    
+
 
         // Escuta o clique na notificação
         LocalNotificationCenter.Current.NotificationActionTapped += OnNotificationTapped;
@@ -57,34 +57,60 @@ public partial class App : Application
 
     private void OnNotificationTapped(NotificationActionEventArgs e)
     {
-        // Verificamos se há dados retornando (o ID que passamos no passo 1)
-        if (!string.IsNullOrWhiteSpace(e.Request.ReturningData)) return;
+        int acao = e.ActionId;
+        string data = e.Request.ReturningData;
+
+        if (int.TryParse(data, out int idMed))
         {
-            if (int.TryParse(e.Request.ReturningData, out int idMed))
+            MainThread.BeginInvokeOnMainThread(async () =>
             {
-                // Forçamos a abertura da tela de Confirmação na Thread principal
-                MainThread.BeginInvokeOnMainThread(async () =>
+                try
                 {
-                    // Se o app estiver usando NavigationPage
-                    try
+                    var lista = await App.Banco.GetMedicamentos();
+                    var med = lista.FirstOrDefault(m => m.Id == idMed);
+
+                    string nomeMed = med?.Nome ?? "Medicamento";
+
+                    if (acao == 100 || acao == 101)// 100 = Tomado, 101 = Pular
                     {
-                        // Se o app já estiver usando NavigationPage, apenas damos o Push
+                        bool foiTomado = acao == 100;
+                        // 👉 REGISTRO NO HISTÓRICO
+                        var registro = new HistoricoUso
+                        {
+                            MedicamentoId = idMed,
+                            DataUso = DateTime.Now,
+                            Tomado = foiTomado,
+                            NomeMedicamento = nomeMed
+                        };
+
+                        await App.Banco.InsertHistorico(registro);
+
+                        // 👉 ATUALIZA A DOSE NO BANCO (Caso queira marcar a dose como concluída)
+                        if (foiTomado)
+                        {
+                            await App.Banco.AtualizarDoseParaTomado(idMed);
+                        }
+
+                        // USAR MainPage em vez de Shell.Current se não estiver usando Shell
+                        await Application.Current.MainPage.DisplayAlert(
+                            "Lembrete",
+                            $"{nomeMed} marcado como {(foiTomado ? "tomado ✅" : "pulado ⚠️")}.",
+                            "OK");
+                    }
+                    else
+                    {
+                        // Clique normal na notificação (abre a página de detalhes)
                         if (MainPage is NavigationPage navPage)
                         {
                             await navPage.PushAsync(new ConfirmacaoPage(idMed));
                         }
-                        else
-                        {
-                            // Caso a estrutura de navegação tenha se perdido, reiniciamos com a página de confirmação
-                            MainPage = new NavigationPage(new ConfirmacaoPage(idMed));
-                        }
                     }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Erro ao navegar: {ex.Message}");
-                    }
-                });
-            }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Erro ao processar notificação: {ex.Message}");
+                }
+            });
         }
     }
 }

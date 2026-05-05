@@ -1,8 +1,9 @@
 ﻿using AppLembreteMedicacao.Helpers;
 using AppLembreteMedicacao.Models;
 using AppLembreteMedicacao.Views;
-using Plugin.LocalNotification;
 using Microsoft.Maui.Storage;
+using Plugin.LocalNotification;
+using Plugin.LocalNotification.AndroidOption;
 
 namespace AppLembreteMedicacao;
 
@@ -14,13 +15,30 @@ public partial class MainPage : ContentPage
     {
         InitializeComponent();
 
+        // Registro dos botões da notificação
+        ConfigurarCategoriasDeNotificacao();
+
         // Zoom ao tocar no botão de cronograma
         btnCronograma.Pressed += async (s, e) => await btnCronograma.ScaleTo(1.2, 100);
         btnCronograma.Released += async (s, e) => await btnCronograma.ScaleTo(1, 100);
 
     }
+    private void ConfigurarCategoriasDeNotificacao()
+    {
+        var acoes = new HashSet<NotificationAction>
+        {
+            new NotificationAction(100) { Title = "Dose Tomada" },
+        new NotificationAction(101) { Title = "Pular Dose" }
+    };
 
+        // Na v10, usamos o tipo "Status" para agrupar os botões.
+        var categoria = new NotificationCategory(NotificationCategoryType.Status)
+        {
+            ActionList = acoes
+        };
 
+        LocalNotificationCenter.Current.RegisterCategory(categoria);
+    }
     private async void AoClicarSair(object sender, EventArgs e)
     {
         bool confirmar = await DisplayAlert("Sair", "Deseja realmente sair?", "Sim", "Não");
@@ -46,7 +64,7 @@ public partial class MainPage : ContentPage
 
         // Abre o menu de opções nativo
         string acao = await DisplayActionSheet($"Opções para: {medicamento.Nome}",
-            "Cancelar", "Remover", "Ver Horários", "Gerar Ciclo 6h/6h", "Gerar Ciclo 8h/8h", "Gerar Ciclo 12h/12h", "Gerar Ciclo 24h/24h");
+            "Cancelar", "Remover", "Editar", "Ver Horários", "Gerar Ciclo 6h/6h", "Gerar Ciclo 8h/8h", "Gerar Ciclo 12h/12h", "Gerar Ciclo 24h/24h");
 
         switch (acao)
         {
@@ -71,6 +89,19 @@ public partial class MainPage : ContentPage
                 await GerarCicloAutomatico(medicamento.Id, 24);
                 break;
 
+            case "Editar":
+                // Guarda o medicamento para edição
+                _medicamentoParaEdicao = medicamento;
+
+                // Preenche os campos da tela
+                entNome.Text = medicamento.Nome;
+                entDose.Text = medicamento.Dosagem;
+                dtInicio.Date = medicamento.DataInicio;
+                dtFim.Date = medicamento.DataFim ?? DateTime.Today;
+
+                await DisplayAlert("Edição", "Edite os dados e clique em salvar.", "OK");
+                break;
+
             case "Remover":
                 bool confirmar = await DisplayAlert("Atenção", $"Excluir {medicamento.Nome}?", "Sim", "Não");
                 if (confirmar)
@@ -93,23 +124,73 @@ public partial class MainPage : ContentPage
 
         try
         {
-            var novo = new Medicamento
+            if (_medicamentoParaEdicao == null)
             {
-                Nome = entNome.Text,
-                Dosagem = entDose.Text,
-                DataInicio = dtInicio.Date,
-                DataFim = dtFim.Date,
-                Ativo = 1,
-                // Inicialmente zero, será atualizado quando você gerar o ciclo
-                IntervaloHoras = 0
-            };
+                // ✅ NOVO
+                var novo = new Medicamento
+                {
+                    Nome = entNome.Text,
+                    Dosagem = entDose.Text,
+                    DataInicio = dtInicio.Date,
+                    DataFim = dtFim.Date,
+                    Ativo = 1,
+                    IntervaloHoras = 0
+                };
 
-            await App.Banco.InsertMedicamento(novo);
+                await App.Banco.InsertMedicamento(novo);
 
+                // PEGA O ID REAL DO BANCO
+                var ultimo = await App.Banco.GetUltimoMedicamento();
+
+                // NOTIFICAÇÃO COM BOTÕES
+                var notifNovo = new NotificationRequest
+                {
+                    NotificationId = ultimo.Id,
+                    Title = "Hora do Remédio 💊",
+                    Description = $"Tomar {novo.Nome}",
+
+                    ReturningData = ultimo.Id.ToString(),
+                    // Vincula aos botões configurados no construtor
+                    CategoryType = NotificationCategoryType.Status,
+
+                    Schedule = new NotificationRequestSchedule
+                    {
+                        NotifyTime = DateTime.Now.AddSeconds(5)
+                    },
+
+                    Android = new AndroidOptions
+                    {
+                        
+                        LaunchAppWhenTapped = true
+                    }
+                };
+
+                // 🔥 mostra a notificação
+                await LocalNotificationCenter.Current.Show(notifNovo);
+
+                // mensagem
+                await DisplayAlert("Sucesso", "Medicamento cadastrado com notificação!", "OK");
+            }
+            else
+            {
+                // ✏️ EDITAR
+                _medicamentoParaEdicao.Nome = entNome.Text;
+                _medicamentoParaEdicao.Dosagem = entDose.Text;
+                _medicamentoParaEdicao.DataInicio = dtInicio.Date;
+                _medicamentoParaEdicao.DataFim = dtFim.Date;
+
+                await App.Banco.UpdateMedicamento(_medicamentoParaEdicao);
+
+                await DisplayAlert("Sucesso", "Medicamento atualizado!", "OK");
+
+                // Limpa modo edição
+                _medicamentoParaEdicao = null;
+            }
+
+            // Limpa campos
             entNome.Text = string.Empty;
             entDose.Text = string.Empty;
 
-            await DisplayAlert("Sucesso", "Remédio cadastrado! Agora toque nele para definir o ciclo.", "OK");
             CarregarMedicamentos();
         }
         catch (Exception ex)
@@ -168,7 +249,6 @@ public partial class MainPage : ContentPage
     {
         try
         {
-
 
             // Foca o cursor automaticamente no campo Nome do Remédio
             entNome.Focus();

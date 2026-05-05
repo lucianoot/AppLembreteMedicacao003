@@ -50,7 +50,10 @@ namespace AppLembreteMedicacao.Helpers
         {
             return _conn.InsertAsync(historico);
         }
-        public Task<int> InsertHistorico(HistoricoUso h) => _conn.InsertAsync(h);
+        public Task<int> InsertHistorico(HistoricoUso historico)
+        {
+            return _conn.InsertAsync(historico);
+        }
         // PARA O PACIENTE (Filtra por um remédio específico)
         public Task<List<HistoricoUso>> GetHistorico(int medicamentoId)
         {
