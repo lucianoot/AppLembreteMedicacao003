@@ -21,19 +21,35 @@ public partial class App : Application
             Banco = new SQLiteDatabaseHelper(caminho);
         }
 
-        // VERIFICA SE JÁ TEM USUÁRIO LOGADO
         string email = Preferences.Get("usuarioLogado", "");
+        string tipoUsuario = Preferences.Get("TipoUsuario", "");
 
+        // Se já tem usuário logado
         if (!string.IsNullOrEmpty(email))
         {
-            // Já está logado → vai direto pro app
-            MainPage = new NavigationPage(new MainPage());
+            switch (tipoUsuario)
+            {
+                case "Paciente":
+                    MainPage = new NavigationPage(new MainPage());
+                    break;
+
+                case "Médico":
+                case "Responsável":
+                    MainPage = new NavigationPage(new Monitoramento());
+                    break;
+
+                default:
+                    // Se não tiver tipo definido, manda pro login
+                    MainPage = new NavigationPage(new Login());
+                    break;
+            }
         }
         else
         {
-            // Não está logado → vai pro login
+            // Não está logado
             MainPage = new NavigationPage(new Login());
         }
+    
 
         // Escuta o clique na notificação
         LocalNotificationCenter.Current.NotificationActionTapped += OnNotificationTapped;
