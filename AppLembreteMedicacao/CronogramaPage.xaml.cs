@@ -8,12 +8,19 @@ namespace AppLembreteMedicacao.Views
     {
         public int MedicamentoId { get; set; }
 
-        public CronogramaPage(int medicamentoId)
+        // Adicionei ", string nome = """ aqui para aceitar o nome do remédio
+        public CronogramaPage(int medicamentoId, string nome = "")
         {
             InitializeComponent();
             MedicamentoId = medicamentoId;
 
-            // Feedback visual no botão
+            // Se o nome foi enviado, ele vira o título da página lá no topo
+            if (!string.IsNullOrEmpty(nome))
+            {
+                Title = $"Horários: {nome}";
+            }
+
+            // Feedback visual no botão (seu código original)
             btnAdicionarHorario.Pressed += async (s, e) => await btnAdicionarHorario.ScaleTo(1.1, 100);
             btnAdicionarHorario.Released += async (s, e) => await btnAdicionarHorario.ScaleTo(1, 100);
         }
@@ -106,7 +113,7 @@ namespace AppLembreteMedicacao.Views
             }
         }
 
-       
+
         private async void AoClicarRemoverHorario(object sender, EventArgs e)
         {
             if (sender is not Button button || button.CommandParameter is not int id) return;
