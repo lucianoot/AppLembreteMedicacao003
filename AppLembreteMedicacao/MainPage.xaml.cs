@@ -9,8 +9,8 @@ namespace AppLembreteMedicacao;
 public partial class MainPage : ContentPage
 {
     private Medicamento _medicamentoParaEdicao;
-    public MainPage()
 
+    public MainPage()
     {
         InitializeComponent();
 
@@ -20,10 +20,71 @@ public partial class MainPage : ContentPage
 
     }
 
-    // Salvar remédio
+
+    private async void AoClicarSair(object sender, EventArgs e)
+    {
+        bool confirmar = await DisplayAlert("Sair", "Deseja realmente sair?", "Sim", "Não");
+
+        if (confirmar)
+        {
+            // 1. Limpa o email salvo para não logar sozinho na próxima vez
+            Preferences.Remove("UserEmail");
+
+            // 2. Volta para a tela de Login 
+            App.Current.MainPage = new NavigationPage(new AppLembreteMedicacao.Views.Login());
+        }
+    }
+
+
+    //  NOVO MÉTODO DE CLIQUE (Substitui o OnMedicamentoSelecionado)
+    private async void OnMedicamentoTapped(object sender, TappedEventArgs e)
+    {
+        // Pega o remédio que foi passado pelo CommandParameter no XAML
+        var medicamento = e.Parameter as Medicamento;
+
+        if (medicamento == null) return;
+
+        // Abre o menu de opções nativo
+        string acao = await DisplayActionSheet($"Opções para: {medicamento.Nome}",
+            "Cancelar", "Remover", "Ver Horários", "Gerar Ciclo 6h/6h", "Gerar Ciclo 8h/8h", "Gerar Ciclo 12h/12h", "Gerar Ciclo 24h/24h");
+
+        switch (acao)
+        {
+            case "Ver Horários":
+                // Agora passando o ID e o Nome
+                await Navigation.PushAsync(new CronogramaPage(medicamento.Id, medicamento.Nome));
+                break;
+
+            case "Gerar Ciclo 6h/6h":
+                await GerarCicloAutomatico(medicamento.Id, 6);
+                break;
+
+            case "Gerar Ciclo 8h/8h":
+                await GerarCicloAutomatico(medicamento.Id, 8);
+                break;
+
+            case "Gerar Ciclo 12h/12h":
+                await GerarCicloAutomatico(medicamento.Id, 12);
+                break;
+
+            case "Gerar Ciclo 24h/24h":
+                await GerarCicloAutomatico(medicamento.Id, 24);
+                break;
+
+            case "Remover":
+                bool confirmar = await DisplayAlert("Atenção", $"Excluir {medicamento.Nome}?", "Sim", "Não");
+                if (confirmar)
+                {
+                    await App.Banco.DeleteMedicamento(medicamento.Id);
+                    CarregarMedicamentos(); // Atualiza a lista na tela
+                }
+                break;
+        }
+    }
+
+    // Método para salvar o remédio (campos da tela)
     private async void AoClicarSalvar(object sender, EventArgs e)
     {
-        // 1. Validação básica: não salva se o nome estiver vazio
         if (string.IsNullOrWhiteSpace(entNome.Text))
         {
             await DisplayAlert("Erro", "Por favor, preencha o nome do remédio.", "OK");
@@ -31,63 +92,25 @@ public partial class MainPage : ContentPage
         }
 
         try
-
         {
-            if (_medicamentoParaEdicao == null)
+            var novo = new Medicamento
             {
-                // --- BLOCO 1: NOVO REMÉDIO ---
-                var novo = new Medicamento
-                {
-                    Nome = entNome.Text,
-                    Dosagem = entDose.Text,
-                    DataInicio = dtInicio.Date,
-                    DataFim = dtFim.Date,
+                Nome = entNome.Text,
+                Dosagem = entDose.Text,
+                DataInicio = dtInicio.Date,
+                DataFim = dtFim.Date,
+                Ativo = 1,
+                // Inicialmente zero, será atualizado quando você gerar o ciclo
+                IntervaloHoras = 0
+            };
 
-                    Ativo = 1
-                };
+            await App.Banco.InsertMedicamento(novo);
 
-                await App.Banco.InsertMedicamento(novo);
+            entNome.Text = string.Empty;
+            entDose.Text = string.Empty;
 
-                // Buscamos o ID gerado pelo banco para colocar na notificação
-                var ultimo = await App.Banco.GetUltimoMedicamento();
-                // Notificação para novo cadastro
-                var notifNovo = new NotificationRequest
-                {
-                    NotificationId = 1,
-                    Title = "Remédio Cadastrado",
-                    Description = $"O lembrete para {novo.Nome} foi criado!",
-                    Schedule = new NotificationRequestSchedule { NotifyTime = DateTime.Now.AddSeconds(2) }
-                };
-                await LocalNotificationCenter.Current.Show(notifNovo);
-                // MENSAGEM DE SUCESSO
-                await DisplayAlert("Sucesso", "Medicamento cadastrado com sucesso!", "OK");
-            }
-            else
-            {
-                // --- BLOCO 2: ATUALIZAR EXISTENTE ---
-                _medicamentoParaEdicao.Nome = entNome.Text;
-                _medicamentoParaEdicao.Dosagem = entDose.Text;
-                _medicamentoParaEdicao.DataInicio = dtInicio.Date;
-                _medicamentoParaEdicao.DataFim = dtFim.Date;
-
-                await App.Banco.UpdateMedicamento(_medicamentoParaEdicao);
-
-                // Notificação para atualização
-                var notifEdit = new NotificationRequest
-                {
-                    NotificationId = 2,
-                    Title = "Remédio Atualizado",
-                    Description = $"As alterações em {_medicamentoParaEdicao.Nome} foram salvas!",
-                    Schedule = new NotificationRequestSchedule { NotifyTime = DateTime.Now.AddSeconds(2) }
-                };
-                await LocalNotificationCenter.Current.Show(notifEdit);
-
-                // MENSAGEM DE SUCESSO
-                await DisplayAlert("Sucesso", "Medicamento atualizado com sucesso!", "OK");
-            }
-
-            // 3. Fecha a tela e volta para a lista após salvar
-            await Navigation.PopAsync();
+            await DisplayAlert("Sucesso", "Remédio cadastrado! Agora toque nele para definir o ciclo.", "OK");
+            CarregarMedicamentos();
         }
         catch (Exception ex)
         {
@@ -95,134 +118,107 @@ public partial class MainPage : ContentPage
         }
     }
 
-
-
-    private async void OnMedicamentoSelecionado(object sender, SelectionChangedEventArgs e)
+    private async Task GerarCicloAutomatico(int medId, int intervalo)
     {
-        var med = e.CurrentSelection.FirstOrDefault() as Medicamento;
-        if (med != null)
-        {
-            // Passa o ID do remédio para a próxima página
-            await Navigation.PushAsync(new CronogramaPage(med.Id));
+        // Atualiza o medicamento com o intervalo escolhido 
+        var listaMed = await App.Banco.GetMedicamentos();
+        var medicamento = listaMed.FirstOrDefault(m => m.Id == medId);
 
-            // Limpa a seleção para não ficar cinza
-            ((CollectionView)sender).SelectedItem = null;
+        if (medicamento != null)
+        {
+            medicamento.IntervaloHoras = intervalo;
+            await App.Banco.UpdateMedicamento(medicamento);
         }
+        // ------------------------------------------------------------------
+
+        DateTime horaAtual = DateTime.Now;
+        int repeticoes = 24 / intervalo;
+
+        for (int i = 0; i < repeticoes; i++)
+        {
+            var novoHorario = new Cronograma
+            {
+                MedicamentoId = medId,
+                Hora = horaAtual.AddHours(i * intervalo).ToString(@"HH\:mm"),
+                Frequencia = "Automático",
+                Ativo = 1
+            };
+            await App.Banco.InsertCronograma(novoHorario);
+        }
+
+        await DisplayAlert("Sucesso", $"Ciclo de {intervalo}h criado!", "OK");
+        CarregarMedicamentos(); // Recarrega a lista para mostrar o "6h/6h" na tela
     }
 
-
-
-
-
-
-    // Abrir cronograma
     private async void AoClicarCronograma(object sender, EventArgs e)
     {
         var ultimoRemedio = await App.Banco.GetUltimoMedicamento();
         if (ultimoRemedio != null)
-        { await Navigation.PushAsync(new CronogramaPage(ultimoRemedio.Id)); }
-        else
-
         {
-            await DisplayAlert("Atenção", "Cadastre um remédio antes de criar o cronograma.", "OK");
-
+            await Navigation.PushAsync(new CronogramaPage(ultimoRemedio.Id, ultimoRemedio.Nome));
+        }
+        else
+        {
+            await DisplayAlert("Atenção", "Cadastre um remédio primeiro.", "OK");
         }
     }
 
+    // Botão flutuante (+)
     private async void AoClicarNovoRemedio(object sender, EventArgs e)
     {
-        // Este comando abre a tela que você criou
-        await Navigation.PushAsync(new Novomedicacao());
-    }
-
-    protected override async void OnAppearing()
-    {
-        base.OnAppearing();
-
         try
         {
-            // 1. Busca a lista de remédios que você salvou no Banco
-            var lista = await App.Banco.GetMedicamentos();
 
-            // 2. Coloca essa lista dentro do componente visual que você criou
-            if (lista != null)
+
+            // Foca o cursor automaticamente no campo Nome do Remédio
+            entNome.Focus();
+
+            // Feedback visual simples no botão que foi clicado
+            if (sender is VisualElement botao)
             {
-                listaMedicamentos.ItemsSource = lista;
+                await botao.ScaleTo(1.2, 100);
+                await botao.ScaleTo(1.0, 100);
             }
         }
         catch (Exception ex)
         {
-            // Caso ocorra algum erro na leitura do banco
-            System.Diagnostics.Debug.WriteLine($"Erro ao carregar lista: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Erro ao focar: {ex.Message}");
         }
     }
-
-    private async void OnDeleteClicked(object sender, EventArgs e)
+    protected override void OnAppearing()
     {
-        var med = (sender as Button).CommandParameter as Medicamento;
+        base.OnAppearing();
+        CarregarMedicamentos();
+    }
 
-        bool confirm = await DisplayAlert("Excluir", $"Deseja apagar {med.Nome}?", "Sim", "Não");
-
-        if (confirm)
+    private async void CarregarMedicamentos()
+    {
+        try
         {
-            // Aqui você usa o ID que o seu método pede
-            await App.Banco.DeleteMedicamento(med.Id);
-
-            // Atualiza a lista na tela
-            OnAppearing();
+            var lista = await App.Banco.GetMedicamentos();
+            listaMedicamentos.ItemsSource = lista;
         }
-    }
-
-    private void Button_Clicked(object sender, EventArgs e)
-    {
-
-    }
-
-    private void ToolbarItem_Clicked(object sender, EventArgs e)
-    {
-
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro: {ex.Message}");
+        }
     }
 
     private async void ToolbarItem_Clicked_1(object sender, EventArgs e)
     {
-
-        // 1. Busca os remédios salvos no banco SQLite configurado ontem
         var lista = await App.Banco.GetMedicamentos();
+        if (lista == null || lista.Count == 0) return;
 
-        if (lista == null || lista.Count == 0)
-        {
-            await DisplayAlert("Prontuário", "Você ainda não tem remédios cadastrados.", "OK");
-            return;
-        }
+        string prontuario = $"📋 PRONTUÁRIO - {DateTime.Now:dd/MM/yyyy}\n\n";
+        foreach (var m in lista) prontuario += $"💊 {m.Nome} ({m.Dosagem})\n";
 
-        // 2. Monta o texto do prontuário formatado
-        string prontuario = $"📋 MEU PRONTUÁRIO - {DateTime.Now:dd/MM/yyyy}\n\n";
-        foreach (var m in lista)
-        {
-            prontuario += $"💊 {m.Nome} ({m.Dosagem})\n";
-        }
-
-        // --- AQUI ENTRA A SEGURANÇA (VERONICA) ---
-        // Chamamos o SecurityHelper para proteger o texto
         string hashSeguro = SecurityHelper.GerarHash(prontuario);
 
-        // 3. Abre a opção de compartilhar do celular (WhatsApp, E-mail, etc)
         await Share.Default.RequestAsync(new ShareTextRequest
         {
-            Title = "Compartilhar Prontuário (Protegido)",
+            Title = "Compartilhar Prontuário",
             Text = $"Hash de Segurança:\n{hashSeguro}",
             Uri = "App Meu Remédio"
-
         });
-        // ADICIONE ISSO ABAIXO DO SHARE:
-        await DisplayAlert("Sucesso", "Compartilhamento concluído! Retornando ao início...", "OK");
-    }
-        private void OnSairClicked(object sender, EventArgs e)
-    {
-        Preferences.Clear();
-        Application.Current.MainPage = new NavigationPage(new Login());
-
-
     }
 }
-

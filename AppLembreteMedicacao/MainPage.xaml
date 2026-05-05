@@ -8,97 +8,92 @@
         <ToolbarItem Text="Compartilhar Prontuário" 
                      Clicked="ToolbarItem_Clicked_1" 
                      Order="Primary" />
+
         <ToolbarItem Text="Sair" 
-                 Clicked="OnSairClicked" 
-                 Order="Primary" 
-                 Priority="1"/>
+                     Clicked="AoClicarSair" 
+                     Order="Secondary" />
     </ContentPage.ToolbarItems>
 
-    <ScrollView>
-        <VerticalStackLayout Padding="30" Spacing="15">
-            <Label Text="Cadastro de Remédio" FontSize="24" HorizontalOptions="Center" FontAttributes="Bold" />
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="30" Spacing="15">
+                <Label Text="Cadastro de Remédio" FontSize="24" HorizontalOptions="Center" FontAttributes="Bold" />
 
-            <Entry x:Name="entNome" Placeholder="Nome do Remédio"/>
-            <Entry x:Name="entDose" Placeholder="Dosagem (ex: 500mg)"/>
+                <Entry x:Name="entNome" Placeholder="Nome do Remédio"/>
+                <Entry x:Name="entDose" Placeholder="Dosagem (ex: 500mg)"/>
 
-            <Label Text="Data de Início:" />
-            <DatePicker x:Name="dtInicio" Format="dd/MM/yyyy"/>
+                <Label Text="Data de Início:" />
+                <DatePicker x:Name="dtInicio" Format="dd/MM/yyyy"/>
 
-            <Label Text="Data Final:" />
-            <DatePicker x:Name="dtFim" Format="dd/MM/yyyy"/>
+                <Label Text="Data Final:" />
+                <DatePicker x:Name="dtFim" Format="dd/MM/yyyy"/>
 
-            <Button Text="Salvar" Clicked="AoClicarSalvar"
-                    BackgroundColor="#27ae60" TextColor="White"/>
+                <Button Text="Salvar Medicamento" Clicked="AoClicarSalvar"
+                        BackgroundColor="#27ae60" TextColor="White"/>
 
-            <Button Text="Novo Remédio" Clicked="AoClicarNovoRemedio"
-                    BackgroundColor="#27ae60" TextColor="White"/>
+                <Button x:Name="btnCronograma"
+                        Text="Ver Último Cronograma"
+                        Clicked="AoClicarCronograma"
+                        BackgroundColor="#6A0DAD"
+                        TextColor="White"
+                        CornerRadius="10"
+                        HeightRequest="50"
+                        Margin="0,10,0,0"/>
 
+                <BoxView HeightRequest="1" Color="LightGray" Margin="0,10" />
 
+                <Label Text="Seus Remédios (Toque para gerenciar):" FontAttributes="Bold" FontSize="16" />
 
-            <Button x:Name="btnCronograma"
-            Text="Ver Último Cronograma"
-            Clicked="AoClicarCronograma"
-            BackgroundColor="#6A0DAD"
-            TextColor="White"
-            CornerRadius="10"
-            HeightRequest="50"
-            Margin="0,10,0,0"/>
-            
-            
-            
+                <CollectionView x:Name="listaMedicamentos" 
+                                EmptyView="Nenhum remédio cadastrado ainda."
+                                SelectionMode="None"
+                                Margin="0,0,0,80">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame BorderColor="#27ae60" CornerRadius="10" Margin="0,5" Padding="15">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnMedicamentoTapped" CommandParameter="{Binding .}" />
+                                </Frame.GestureRecognizers>
 
-            <Label Text="Toque no remédio para gerenciar horários:" FontAttributes="Italic" FontSize="12" HorizontalOptions="Center" />
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                                        <Label Text="{Binding Nome}" FontAttributes="Bold" FontSize="18" />
 
-            <CollectionView x:Name="listaMedicamentos" 
+                                        <!-- ORGANIZAÇÃO DA DOSE E INTERVALO NA MESMA LINHA -->
+                                        <HorizontalStackLayout Spacing="5">
+                                            <Label Text="{Binding Dosagem}" FontSize="14" TextColor="Gray" />
+                                            <Label Text="•" FontSize="14" TextColor="Gray" />
+                                            <!-- AQUI EXIBE O INTERVALO (EX: 8h/8h) -->
+                                            <Label Text="{Binding IntervaloHoras, StringFormat='{0}h/{0}h'}" 
+                                                   FontSize="14" 
+                                                   TextColor="#27ae60" 
+                                                   FontAttributes="Italic" />
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
 
-                            EmptyView="Nenhum remédio cadastrado ainda."
+                                    <Label Grid.Column="1" Text="➔" VerticalOptions="Center" TextColor="#27ae60" FontSize="20" />
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
 
-                            SelectionMode="Single"
+            </VerticalStackLayout>
+        </ScrollView>
 
-                            SelectionChanged="OnMedicamentoSelecionado">
-
-                <CollectionView.ItemTemplate>
-
-                    <DataTemplate>
-
-                        <Frame BorderColor="#27ae60" CornerRadius="10" Margin="0,5" Padding="10">
-
-                            <HorizontalStackLayout Spacing="15">
-
-                                <VerticalStackLayout VerticalOptions="Center">
-
-                                    <Label Text="{Binding Nome}" FontAttributes="Bold" FontSize="18" />
-
-                                    <Label Text="{Binding Dosagem}" FontSize="14" TextColor="Gray" />
-
-                                </VerticalStackLayout>
-
-
-
-                                <Label Text="➔" 
-
-                                       VerticalOptions="Center" 
-
-                                       HorizontalOptions="EndAndExpand" 
-
-                                       TextColor="#27ae60" 
-
-                                       FontSize="20" />
-
-                            </HorizontalStackLayout>
-
-                        </Frame>
-
-                    </DataTemplate>
-
-                </CollectionView.ItemTemplate>
-
-            </CollectionView>
-
-
-
-        </VerticalStackLayout>
-
-    </ScrollView>
-
+        <Button Text="+" 
+                Clicked="AoClicarNovoRemedio"
+                BackgroundColor="#27ae60"
+                TextColor="White"
+                FontSize="28"
+                FontAttributes="Bold"
+                HeightRequest="60" 
+                WidthRequest="60"
+                CornerRadius="30"
+                HorizontalOptions="End"
+                VerticalOptions="End"
+                Margin="0,0,25,25"
+                Padding="0"
+                Shadow="{Shadow Brush=Black, Offset='0,3', Radius=3, Opacity=0.2}"/>
+    </Grid>
 </ContentPage>
