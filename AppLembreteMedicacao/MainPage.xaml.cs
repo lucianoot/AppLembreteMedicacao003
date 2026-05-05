@@ -2,6 +2,7 @@
 using AppLembreteMedicacao.Models;
 using AppLembreteMedicacao.Views;
 using Plugin.LocalNotification;
+using Microsoft.Maui.Storage;
 
 namespace AppLembreteMedicacao;
 
@@ -179,6 +180,7 @@ public partial class MainPage : ContentPage
 
     private async void ToolbarItem_Clicked_1(object sender, EventArgs e)
     {
+
         // 1. Busca os remédios salvos no banco SQLite configurado ontem
         var lista = await App.Banco.GetMedicamentos();
 
@@ -210,4 +212,12 @@ public partial class MainPage : ContentPage
         // ADICIONE ISSO ABAIXO DO SHARE:
         await DisplayAlert("Sucesso", "Compartilhamento concluído! Retornando ao início...", "OK");
     }
+        private void OnSairClicked(object sender, EventArgs e)
+    {
+        Preferences.Clear();
+        Application.Current.MainPage = new NavigationPage(new Login());
+
+
+    }
 }
+

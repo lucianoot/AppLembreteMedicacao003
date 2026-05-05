@@ -8,6 +8,10 @@
         <ToolbarItem Text="Compartilhar Prontuário" 
                      Clicked="ToolbarItem_Clicked_1" 
                      Order="Primary" />
+        <ToolbarItem Text="Sair" 
+                 Clicked="OnSairClicked" 
+                 Order="Primary" 
+                 Priority="1"/>
     </ContentPage.ToolbarItems>
 
     <ScrollView>
@@ -39,6 +43,7 @@
             CornerRadius="10"
             HeightRequest="50"
             Margin="0,10,0,0"/>
+            
             
             
 
