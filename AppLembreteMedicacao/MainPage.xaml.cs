@@ -37,7 +37,6 @@ public partial class MainPage : ContentPage
             ActionList = acoes
         };
 
-
     }
     private async void AoClicarSair(object sender, EventArgs e)
     {
