@@ -201,34 +201,58 @@ public partial class MainPage : ContentPage
 
     private async Task GerarCicloAutomatico(int medId, int intervalo)
     {
-        // Atualiza o medicamento com o intervalo escolhido 
+        // 1. Busca o medicamento para saber o nome
         var listaMed = await App.Banco.GetMedicamentos();
         var medicamento = listaMed.FirstOrDefault(m => m.Id == medId);
+        if (medicamento == null) return;
 
-        if (medicamento != null)
-        {
-            medicamento.IntervaloHoras = intervalo;
-            await App.Banco.UpdateMedicamento(medicamento);
-        }
-        // ------------------------------------------------------------------
+        medicamento.IntervaloHoras = intervalo;
+        await App.Banco.UpdateMedicamento(medicamento);
 
-        DateTime horaAtual = DateTime.Now;
+        DateTime horaBase = DateTime.Now;
         int repeticoes = 24 / intervalo;
+
+        List<Dose> listaDosesParaBanco = new List<Dose>();
 
         for (int i = 0; i < repeticoes; i++)
         {
-            var novoHorario = new Cronograma
+            DateTime dataDose = horaBase.AddHours(i * intervalo);
+
+            // 2. Cria a dose para o banco (Status Pendente)
+            var novaDose = new Dose
             {
                 MedicamentoId = medId,
-                Hora = horaAtual.AddHours(i * intervalo).ToString(@"HH\:mm"),
-                Frequencia = "Automático",
-                Ativo = 1
+                NomeMedicamento = medicamento.Nome,
+                Status = "Pendente",
+                HorarioPrevisto = dataDose
             };
-            await App.Banco.InsertCronograma(novoHorario);
+            listaDosesParaBanco.Add(novaDose);
+
+            // 3. AGENDA A NOTIFICAÇÃO PARA CADA DOSE
+            var notif = new NotificationRequest
+            {
+                // O ID da notificação precisa ser ÚNICO. 
+                // Usamos o ID do med + o index para não sobrescrever
+                NotificationId = medId * 100 + i,
+                Title = "Hora do Remédio 💊",
+                Description = $"Tomar {medicamento.Nome}",
+                ReturningData = medId.ToString(), // Passa o ID do Medicamento para o banco atualizar
+                CategoryType = NotificationCategoryType.Status,
+                Schedule = new NotificationRequestSchedule
+                {
+                    NotifyTime = dataDose // Agenda para o horário futuro
+                },
+                Android = new AndroidOptions { LaunchAppWhenTapped = true }
+            };
+
+            await LocalNotificationCenter.Current.Show(notif);
         }
 
-        await DisplayAlert("Sucesso", $"Ciclo de {intervalo}h criado!", "OK");
-        CarregarMedicamentos(); // Recarrega a lista para mostrar o "6h/6h" na tela
+        // 4. Salva todas as doses de uma vez no banco
+        await App.Banco.InsertDoses(listaDosesParaBanco);
+
+        await DisplayAlert("Sucesso", $"Ciclo de {intervalo}h criado e notificações agendadas!", "OK");
+        CarregarMedicamentos();
     }
 
     private async void AoClicarCronograma(object sender, EventArgs e)

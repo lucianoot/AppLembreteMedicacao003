@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Plugin.LocalNotification;  //Adicionado em 07/04
-using System.Globalization; 
+using System.Globalization;
+
 
 namespace AppLembreteMedicacao
 {
@@ -8,6 +9,7 @@ namespace AppLembreteMedicacao
     {
         public static MauiApp CreateMauiApp()
         {
+
             // Defina a cultura para Português do Brasil
             var culturaBr = new CultureInfo("pt-BR");
             CultureInfo.DefaultThreadCurrentCulture = culturaBr;
