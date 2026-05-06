@@ -37,7 +37,7 @@ public partial class MainPage : ContentPage
             ActionList = acoes
         };
 
-        LocalNotificationCenter.Current.RegisterCategory(categoria);
+      
     }
     private async void AoClicarSair(object sender, EventArgs e)
     {
