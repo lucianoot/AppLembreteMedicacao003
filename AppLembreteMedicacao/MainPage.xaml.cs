@@ -37,7 +37,7 @@ public partial class MainPage : ContentPage
             ActionList = acoes
         };
 
-        LocalNotificationCenter.Current.RegisterCategory(categoria);
+        //LocalNotificationCenter.Current.RegisterCategory(categoria);
     }
     private async void AoClicarSair(object sender, EventArgs e)
     {
@@ -160,7 +160,7 @@ public partial class MainPage : ContentPage
 
                     Android = new AndroidOptions
                     {
-                        
+
                         LaunchAppWhenTapped = true
                     }
                 };
@@ -286,19 +286,34 @@ public partial class MainPage : ContentPage
 
     private async void ToolbarItem_Clicked_1(object sender, EventArgs e)
     {
-        var lista = await App.Banco.GetMedicamentos();
-        if (lista == null || lista.Count == 0) return;
-
-        string prontuario = $"📋 PRONTUÁRIO - {DateTime.Now:dd/MM/yyyy}\n\n";
-        foreach (var m in lista) prontuario += $"💊 {m.Nome} ({m.Dosagem})\n";
-
-        string hashSeguro = SecurityHelper.GerarHash(prontuario);
-
-        await Share.Default.RequestAsync(new ShareTextRequest
+        try
         {
-            Title = "Compartilhar Prontuário",
-            Text = $"Hash de Segurança:\n{hashSeguro}",
-            Uri = "App Meu Remédio"
-        });
+            // 1. Busca TODO o histórico (Monitoramento) do banco
+            var historico = await App.Banco.GetTodosHistorico();
+
+            if (historico == null || !historico.Any())
+            {
+                await DisplayAlert("Aviso", "Ainda não há registros de doses tomadas para exportar.", "OK");
+                return;
+            }
+
+            // 2. Gera o Hash baseado no histórico para garantir que os dados não foram alterados
+            string dadosParaHash = string.Join("|", historico.Select(h => $"{h.DataUso}-{h.Tomado}"));
+            string hashSeguro = SecurityHelper.GerarHash(dadosParaHash);
+
+            // 3. Gera o ARQUIVO PDF de MONITORAMENTO
+            string caminhoDoPdf = PdfService.GerarPdfMonitoramento(historico, hashSeguro);
+
+            // 4. Compartilha o arquivo
+            await Share.Default.RequestAsync(new ShareFileRequest
+            {
+                Title = "Relatório de Monitoramento - " + DateTime.Now.ToString("dd/MM/yyyy"),
+                File = new ShareFile(caminhoDoPdf)
+            });
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro", "Falha ao gerar relatório de monitoramento: " + ex.Message, "OK");
+        }
     }
 }
