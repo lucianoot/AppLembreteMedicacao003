@@ -37,7 +37,7 @@ public partial class MainPage : ContentPage
             ActionList = acoes
         };
 
-    }
+
     private async void AoClicarSair(object sender, EventArgs e)
     {
         bool confirmar = await DisplayAlert("Sair", "Deseja realmente sair?", "Sim", "Não");
