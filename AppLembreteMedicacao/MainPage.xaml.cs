@@ -37,12 +37,8 @@ public partial class MainPage : ContentPage
             ActionList = acoes
         };
 
-<<<<<<< HEAD
-
-=======
-        //LocalNotificationCenter.Current.RegisterCategory(categoria);
+        LocalNotificationCenter.Current.RegisterCategory(categoria);
     }
->>>>>>> fcd8404016ece80b90b815860de72a1d929893c2
     private async void AoClicarSair(object sender, EventArgs e)
     {
         bool confirmar = await DisplayAlert("Sair", "Deseja realmente sair?", "Sim", "Não");
