@@ -115,9 +115,15 @@ namespace AppLembreteMedicacao.Helpers
             }
             return 0;
         } // Nenhuma dose pendente encontrada
-        
-        
+
+
         // --- USUÁRIO ---
+        public Task<Usuario> GetPaciente()
+        {
+            return _conn.Table<Usuario>()
+                        .Where(u => u.TipoPerfil == "Paciente")
+                        .FirstOrDefaultAsync();
+        }
         public Task<int> InsertUsuario(Usuario u) => _conn.InsertAsync(u);
         public Task<Usuario> GetUsuarioEmail(string email) =>
             _conn.Table<Usuario>().Where(u => u.Email == email).FirstOrDefaultAsync();
@@ -128,6 +134,8 @@ namespace AppLembreteMedicacao.Helpers
                                      .FirstOrDefaultAsync();
 
             return usuario != null;
+
+
         }
     }
 }

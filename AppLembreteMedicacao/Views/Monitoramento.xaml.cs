@@ -29,10 +29,18 @@ public partial class Monitoramento : ContentPage
     {
         try
         {
-            // 1. Atualiza o nome do paciente na tela
-            // Se você salva o nome no login usando Preferences:
-            string nomeSalvo = Microsoft.Maui.Storage.Preferences.Get("NomeUsuario", "Paciente");
-            lblNomePaciente.Text = nomeSalvo.ToUpper();
+            // 1. Busca o paciente diretamente
+            var paciente = await App.Banco.GetPaciente();
+
+            if (paciente != null)
+            {
+                // Certifica-te que no XAML o nome é lblNomePaciente
+                lblNomePaciente.Text = paciente.Nome.ToUpper();
+            }
+            else
+            {
+                lblNomePaciente.Text = "PACIENTE NÃO ENCONTRADO";
+            }
             List<HistoricoUso> listaBruta;
 
             if (_medicamentoId == 0)
