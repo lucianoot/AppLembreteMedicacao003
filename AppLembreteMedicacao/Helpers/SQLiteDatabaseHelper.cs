@@ -22,10 +22,17 @@ namespace AppLembreteMedicacao.Helpers
 
         // --- MEDICAMENTO ---
         public Task<int> InsertMedicamento(Medicamento m) => _conn.InsertAsync(m);
-        public Task<List<Medicamento>> GetMedicamentos() => _conn.Table<Medicamento>().ToListAsync();
+        // Busca apenas remédios que não foram "excluídos"
+        public Task<List<Medicamento>> GetMedicamentosAtivos() =>
+            _conn.Table<Medicamento>().Where(m => m.Ativo == 1).ToListAsync();
         public Task<Medicamento> GetMedicamentoPorId(int id) => _conn.Table<Medicamento>().Where(m => m.Id == id).FirstOrDefaultAsync();
         public Task<int> UpdateMedicamento(Medicamento m) => _conn.UpdateAsync(m);
         public Task<int> DeleteMedicamento(int id) => _conn.DeleteAsync<Medicamento>(id);
+        public async Task DesativarMedicamento(Medicamento m)
+        {
+            m.Ativo = 0; // Marca como inativo
+            await _conn.UpdateAsync(m);
+        }
 
         public async Task<Medicamento> GetUltimoMedicamento()
         {

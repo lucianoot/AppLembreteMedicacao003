@@ -14,8 +14,8 @@ public partial class ListaMedicacao : ContentPage
         base.OnAppearing();
         try
         {
-            var itens = await App.Banco.GetMedicamentos();
-            listaMedicamentos.ItemsSource = itens;
+            var lista = await App.Banco.GetMedicamentosAtivos();
+            listaMedicamentos.ItemsSource = lista;
         }
         catch (Exception ex)
         {

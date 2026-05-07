@@ -34,7 +34,6 @@ public partial class Monitoramento : ContentPage
 
             if (paciente != null)
             {
-                // Certifica-te que no XAML o nome é lblNomePaciente
                 lblNomePaciente.Text = paciente.Nome.ToUpper();
             }
             else
@@ -50,7 +49,7 @@ public partial class Monitoramento : ContentPage
 
             if (listaBruta != null && listaBruta.Any())
             {
-                // 1. Lógica para a Lista Detalhada (que você já tinha)
+                // 1. Lógica para a Lista Detalhada
                 var listaFormatada = listaBruta.Select(h => new
                 {
                     NomeMedicamento = h.NomeMedicamento,

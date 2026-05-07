@@ -202,8 +202,8 @@ public partial class MainPage : ContentPage
     private async Task GerarCicloAutomatico(int medId, int intervalo)
     {
         // 1. Busca o medicamento para saber o nome
-        var listaMed = await App.Banco.GetMedicamentos();
-        var medicamento = listaMed.FirstOrDefault(m => m.Id == medId);
+        var lista = await App.Banco.GetMedicamentosAtivos();
+        var medicamento = lista.FirstOrDefault(m => m.Id == medId);
         if (medicamento == null) return;
 
         medicamento.IntervaloHoras = intervalo;
@@ -299,7 +299,7 @@ public partial class MainPage : ContentPage
     {
         try
         {
-            var lista = await App.Banco.GetMedicamentos();
+            var lista = await App.Banco.GetMedicamentosAtivos();
             listaMedicamentos.ItemsSource = lista;
         }
         catch (Exception ex)
@@ -311,7 +311,7 @@ public partial class MainPage : ContentPage
     private async void ToolbarItem_Clicked_1(object sender, EventArgs e)
     {
         // 1. Busca os remédios salvos no banco SQLite configurado ontem
-        var lista = await App.Banco.GetMedicamentos();
+        var lista = await App.Banco.GetMedicamentosAtivos();
 
         if (lista == null || lista.Count == 0)
         {
