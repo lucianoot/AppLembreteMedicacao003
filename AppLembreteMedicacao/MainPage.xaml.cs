@@ -37,7 +37,7 @@ public partial class MainPage : ContentPage
             ActionList = acoes
         };
 
-        LocalNotificationCenter.Current.RegisterCategory(categoria);
+        // coloquei como comentário o erro LocalNotificationCenter.Current.RegisterCategory(categoria);
     }
     private async void AoClicarSair(object sender, EventArgs e)
     {
@@ -310,34 +310,35 @@ public partial class MainPage : ContentPage
 
     private async void ToolbarItem_Clicked_1(object sender, EventArgs e)
     {
-        try
+        // 1. Busca os remédios salvos no banco SQLite configurado ontem
+        var lista = await App.Banco.GetMedicamentos();
+
+        if (lista == null || lista.Count == 0)
         {
-            // 1. Busca TODO o histórico (Monitoramento) do banco
-            var historico = await App.Banco.GetTodosHistorico();
-
-            if (historico == null || !historico.Any())
-            {
-                await DisplayAlert("Aviso", "Ainda não há registros de doses tomadas para exportar.", "OK");
-                return;
-            }
-
-            // 2. Gera o Hash baseado no histórico para garantir que os dados não foram alterados
-            string dadosParaHash = string.Join("|", historico.Select(h => $"{h.DataUso}-{h.Tomado}"));
-            string hashSeguro = SecurityHelper.GerarHash(dadosParaHash);
-
-            // 3. Gera o ARQUIVO PDF de MONITORAMENTO
-            string caminhoDoPdf = PdfService.GerarPdfMonitoramento(historico, hashSeguro);
-
-            // 4. Compartilha o arquivo
-            await Share.Default.RequestAsync(new ShareFileRequest
-            {
-                Title = "Relatório de Monitoramento - " + DateTime.Now.ToString("dd/MM/yyyy"),
-                File = new ShareFile(caminhoDoPdf)
-            });
+            await DisplayAlert("Prontuário", "Você ainda não tem remédios cadastrados.", "OK");
+            return;
         }
-        catch (Exception ex)
+
+        // 2. Monta o texto do prontuário formatado
+        string prontuario = $"📋 MEU PRONTUÁRIO - {DateTime.Now:dd/MM/yyyy}\n\n";
+        foreach (var m in lista)
         {
-            await DisplayAlert("Erro", "Falha ao gerar relatório de monitoramento: " + ex.Message, "OK");
+            prontuario += $"💊 {m.Nome} ({m.Dosagem})\n";
         }
+
+        // --- AQUI ENTRA A SEGURANÇA (VERONICA) ---
+        // Chamamos o SecurityHelper para proteger o texto
+        string hashSeguro = SecurityHelper.GerarHash(prontuario);
+
+        // 3. Abre a opção de compartilhar do celular (WhatsApp, E-mail, etc)
+        await Share.Default.RequestAsync(new ShareTextRequest
+        {
+            Title = "Compartilhar Prontuário (Protegido)",
+            Text = $"Hash de Segurança:\n{hashSeguro}",
+            Uri = "App Meu Remédio"
+
+        });
+        // ADICIONE ISSO ABAIXO DO SHARE:
+        await DisplayAlert("Sucesso", "Compartilhamento concluído! Retornando ao início...", "OK");
     }
 }

@@ -29,22 +29,20 @@ public partial class Monitoramento : ContentPage
     {
         try
         {
+            // 1. Atualiza o nome do paciente na tela
+            // Se você salva o nome no login usando Preferences:
+            string nomeSalvo = Microsoft.Maui.Storage.Preferences.Get("NomeUsuario", "Paciente");
+            lblNomePaciente.Text = nomeSalvo.ToUpper();
             List<HistoricoUso> listaBruta;
 
-            // Se o ID for 0, busca tudo (visão do Médico/Responsável)
-            // Se tiver ID, busca só daquele remédio específico
             if (_medicamentoId == 0)
-            {
                 listaBruta = await App.Banco.GetTodosHistorico();
-            }
             else
-            {
                 listaBruta = await App.Banco.GetHistorico(_medicamentoId);
-            }
 
-            if (listaBruta != null)
+            if (listaBruta != null && listaBruta.Any())
             {
-                // Formata a lista para exibir textos bonitos na tela
+                // 1. Lógica para a Lista Detalhada (que você já tinha)
                 var listaFormatada = listaBruta.Select(h => new
                 {
                     NomeMedicamento = h.NomeMedicamento,
@@ -54,11 +52,28 @@ public partial class Monitoramento : ContentPage
                 }).ToList();
 
                 listaHistorico.ItemsSource = listaFormatada;
+
+                // 2. NOVA LÓGICA: Cálculo de Adesão por Medicamento
+                var resumoAdesao = listaBruta
+                    .GroupBy(h => h.NomeMedicamento)
+                    .Select(g => new
+                    {
+                        Nome = g.Key,
+                        Total = g.Count(),
+                        Tomadas = g.Count(x => x.Tomado),
+                        // Cálculo da porcentagem (ex: 0.75 para 75%)
+                        Percentual = (double)g.Count(x => x.Tomado) / g.Count(),
+                        CorAdesao = ((double)g.Count(x => x.Tomado) / g.Count()) >= 0.8 ? Colors.Green : Colors.Orange
+                    })
+                    .ToList();
+
+                // Vincula ao novo componente visual que vamos adicionar no XAML
+                listaEstatisticas.ItemsSource = resumoAdesao;
             }
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", "Não foi possível carregar o histórico: " + ex.Message, "OK");
+            await DisplayAlert("Erro", "Falha ao processar monitoramento: " + ex.Message, "OK");
         }
     }
     private async void OnSairClicked(object sender, EventArgs e)
