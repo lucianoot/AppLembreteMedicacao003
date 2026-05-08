@@ -1,0 +1,93 @@
+is_global = true
+build_property.TargetFramework = net8.0-ios
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = AppLembreteMedicacao
+build_property.ProjectDir = C:\Users\risca\source\repos\AppLembreteMedicacao003-master\AppLembreteMedicacao\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.EffectiveAnalysisLevelStyle = 8.0
+build_property.EnableCodeStyleSeverity = 
+
+[C:/Users/risca/source/repos/AppLembreteMedicacao003-master/AppLembreteMedicacao/AdicionarHorarioPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = AppLembreteMedicacao.AdicionarHorarioPage.xaml
+build_metadata.AdditionalFiles.TargetPath = AdicionarHorarioPage.xaml
+build_metadata.AdditionalFiles.RelativePath = AdicionarHorarioPage.xaml
+
+[C:/Users/risca/source/repos/AppLembreteMedicacao003-master/AppLembreteMedicacao/App.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = AppLembreteMedicacao.App.xaml
+build_metadata.AdditionalFiles.TargetPath = App.xaml
+build_metadata.AdditionalFiles.RelativePath = App.xaml
+
+[C:/Users/risca/source/repos/AppLembreteMedicacao003-master/AppLembreteMedicacao/AppShell.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = AppLembreteMedicacao.AppShell.xaml
+build_metadata.AdditionalFiles.TargetPath = AppShell.xaml
+build_metadata.AdditionalFiles.RelativePath = AppShell.xaml
+
+[C:/Users/risca/source/repos/AppLembreteMedicacao003-master/AppLembreteMedicacao/CronogramaPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = AppLembreteMedicacao.CronogramaPage.xaml
+build_metadata.AdditionalFiles.TargetPath = CronogramaPage.xaml
+build_metadata.AdditionalFiles.RelativePath = CronogramaPage.xaml
+
+[C:/Users/risca/source/repos/AppLembreteMedicacao003-master/AppLembreteMedicacao/MainPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = AppLembreteMedicacao.MainPage.xaml
+build_metadata.AdditionalFiles.TargetPath = MainPage.xaml
+build_metadata.AdditionalFiles.RelativePath = MainPage.xaml
+
+[C:/Users/risca/source/repos/AppLembreteMedicacao003-master/AppLembreteMedicacao/Resources/Styles/Colors.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = AppLembreteMedicacao.Resources.Styles.Colors.xaml
+build_metadata.AdditionalFiles.TargetPath = Resources\Styles\Colors.xaml
+build_metadata.AdditionalFiles.RelativePath = Resources\Styles\Colors.xaml
+
+[C:/Users/risca/source/repos/AppLembreteMedicacao003-master/AppLembreteMedicacao/Resources/Styles/Styles.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = AppLembreteMedicacao.Resources.Styles.Styles.xaml
+build_metadata.AdditionalFiles.TargetPath = Resources\Styles\Styles.xaml
+build_metadata.AdditionalFiles.RelativePath = Resources\Styles\Styles.xaml
+
+[C:/Users/risca/source/repos/AppLembreteMedicacao003-master/AppLembreteMedicacao/Views/CadastroUsuario.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = AppLembreteMedicacao.Views.CadastroUsuario.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\CadastroUsuario.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\CadastroUsuario.xaml
+
+[C:/Users/risca/source/repos/AppLembreteMedicacao003-master/AppLembreteMedicacao/Views/ConfirmacaoPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = AppLembreteMedicacao.Views.ConfirmacaoPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\ConfirmacaoPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\ConfirmacaoPage.xaml
+
+[C:/Users/risca/source/repos/AppLembreteMedicacao003-master/AppLembreteMedicacao/Views/ListaMedicacao.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = AppLembreteMedicacao.Views.ListaMedicacao.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\ListaMedicacao.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\ListaMedicacao.xaml
+
+[C:/Users/risca/source/repos/AppLembreteMedicacao003-master/AppLembreteMedicacao/Views/Login.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = AppLembreteMedicacao.Views.Login.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\Login.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\Login.xaml
+
+[C:/Users/risca/source/repos/AppLembreteMedicacao003-master/AppLembreteMedicacao/Views/Monitoramento.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = AppLembreteMedicacao.Views.Monitoramento.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\Monitoramento.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\Monitoramento.xaml
+
+[C:/Users/risca/source/repos/AppLembreteMedicacao003-master/AppLembreteMedicacao/Views/Novomedicacao.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = AppLembreteMedicacao.Views.Novomedicacao.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\Novomedicacao.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\Novomedicacao.xaml

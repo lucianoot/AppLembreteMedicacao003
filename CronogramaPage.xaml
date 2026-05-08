@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AppLembreteMedicacao.Views.CronogramaPage"
+             Title="Cronograma"
+             BackgroundColor="White">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="20">
+
+            <!-- TÍTULO -->
+            <Label Text="Cronograma do Remédio" 
+                   FontSize="24" 
+                   HorizontalOptions="Center" 
+                   FontAttributes="Bold" 
+                   TextColor="#0056b3" />
+
+            <!-- TEXTO AUXILIAR -->
+            <Label Text="Gerencie os horários do medicamento"
+                   FontSize="14"
+                   HorizontalOptions="Center"
+                   TextColor="Gray" />
+
+            <!-- LISTA -->
+            <CollectionView x:Name="listaCronogramas" 
+                            EmptyView="Nenhum horário definido."
+                            Margin="0,10,0,0">
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+
+                        <!-- CARD -->
+                        <Frame BorderColor="#0056b3"
+                               CornerRadius="10"
+                               Margin="0,5"
+                               Padding="15"
+                               BackgroundColor="White">
+
+                            <Grid ColumnDefinitions="*, *, Auto">
+
+                                <!-- HORA -->
+                                <VerticalStackLayout Grid.Column="0"
+                                                     VerticalOptions="Center">
+
+                                    <Label Text="Horário"
+                                           FontSize="12"
+                                           TextColor="Gray" />
+
+                                    <Label Text="{Binding Hora, StringFormat='🕒 {0}'}"
+                                           FontSize="18"
+                                           FontAttributes="Bold"
+                                           TextColor="#333333" />
+                                </VerticalStackLayout>
+
+                                <!-- FREQUÊNCIA -->
+                                <VerticalStackLayout Grid.Column="1"
+                                                     VerticalOptions="Center">
+
+                                    <Label Text="Frequência"
+                                           FontSize="12"
+                                           TextColor="Gray" />
+
+                                    <Label Text="{Binding Frequencia}"
+                                           FontSize="16"
+                                           TextColor="#0056b3"
+                                           FontAttributes="Italic" />
+                                </VerticalStackLayout>
+
+                                <!-- BOTÃO REMOVER -->
+                                <Button Grid.Column="2"
+                                        Text="❌"
+                                        BackgroundColor="Transparent"
+                                        TextColor="Red"
+                                        FontSize="16"
+                                        VerticalOptions="Center"
+                                        Clicked="AoClicarRemoverHorario"
+                                        CommandParameter="{Binding Id}" />
+
+                            </Grid>
+                        </Frame>
+
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- DIVISÓRIA -->
+            <BoxView HeightRequest="1"
+                     Color="#E0E0E0"
+                     Margin="0,10" />
+
+            <!-- TEXTO -->
+            <Label Text="Toque no relógio para adicionar um novo horário"
+                   FontSize="13"
+                   HorizontalOptions="Center"
+                   TextColor="Gray" />
+
+            <!-- BOTÃO RELÓGIO -->
+            <Frame Padding="15"
+                   CornerRadius="50"
+                   BackgroundColor="#0056b3"
+                   HorizontalOptions="Center"
+                   HasShadow="True">
+
+                <ImageButton x:Name="btnAdicionarHorario"
+                             Source="clock.png"
+                             WidthRequest="60"
+                             HeightRequest="60"
+                             BackgroundColor="Transparent"
+                             Clicked="AoClicarAdicionarHorario"/>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

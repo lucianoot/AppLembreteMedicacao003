@@ -1,0 +1,12 @@
+C:\Users\risca\source\repos\AppLembreteMedicacao003-master\AppLembreteMedicacao\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\AppLembreteMedicacao.csproj.AssemblyReference.cache
+C:\Users\risca\source\repos\AppLembreteMedicacao003-master\AppLembreteMedicacao\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\mauiimage.inputs
+C:\Users\risca\source\repos\AppLembreteMedicacao003-master\AppLembreteMedicacao\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\mauifont.inputs
+C:\Users\risca\source\repos\AppLembreteMedicacao003-master\AppLembreteMedicacao\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\mauisplash.inputs
+C:\Users\risca\source\repos\AppLembreteMedicacao003-master\AppLembreteMedicacao\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\mauimanifest.stamp
+C:\Users\risca\source\repos\AppLembreteMedicacao003-master\AppLembreteMedicacao\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\Platforms\Windows\App.g.i.cs
+C:\Users\risca\source\repos\AppLembreteMedicacao003-master\AppLembreteMedicacao\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\Platforms\Windows\App.g.cs
+C:\Users\risca\source\repos\AppLembreteMedicacao003-master\AppLembreteMedicacao\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\XamlTypeInfo.g.cs
+C:\Users\risca\source\repos\AppLembreteMedicacao003-master\AppLembreteMedicacao\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\Platforms\Windows\App.xaml
+C:\Users\risca\source\repos\AppLembreteMedicacao003-master\AppLembreteMedicacao\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\Platforms\Windows\App.xbf
+C:\Users\risca\source\repos\AppLembreteMedicacao003-master\AppLembreteMedicacao\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\XamlSaveStateFile.xml
+C:\Users\risca\source\repos\AppLembreteMedicacao003-master\AppLembreteMedicacao\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\AppLembreteMedicacao.GeneratedMSBuildEditorConfig.editorconfig
