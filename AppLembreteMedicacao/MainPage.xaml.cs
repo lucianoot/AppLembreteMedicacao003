@@ -37,7 +37,7 @@ public partial class MainPage : ContentPage
             ActionList = acoes
         };
 
-        LocalNotificationCenter.Current.RegisterCategory(categoria);
+        // coloquei como comentário o erro LocalNotificationCenter.Current.RegisterCategory(categoria);
     }
     private async void AoClicarSair(object sender, EventArgs e)
     {
@@ -201,34 +201,58 @@ public partial class MainPage : ContentPage
 
     private async Task GerarCicloAutomatico(int medId, int intervalo)
     {
-        // Atualiza o medicamento com o intervalo escolhido 
-        var listaMed = await App.Banco.GetMedicamentos();
-        var medicamento = listaMed.FirstOrDefault(m => m.Id == medId);
+        // 1. Busca o medicamento para saber o nome
+        var lista = await App.Banco.GetMedicamentosAtivos();
+        var medicamento = lista.FirstOrDefault(m => m.Id == medId);
+        if (medicamento == null) return;
 
-        if (medicamento != null)
-        {
-            medicamento.IntervaloHoras = intervalo;
-            await App.Banco.UpdateMedicamento(medicamento);
-        }
-        // ------------------------------------------------------------------
+        medicamento.IntervaloHoras = intervalo;
+        await App.Banco.UpdateMedicamento(medicamento);
 
-        DateTime horaAtual = DateTime.Now;
+        DateTime horaBase = DateTime.Now;
         int repeticoes = 24 / intervalo;
+
+        List<Dose> listaDosesParaBanco = new List<Dose>();
 
         for (int i = 0; i < repeticoes; i++)
         {
-            var novoHorario = new Cronograma
+            DateTime dataDose = horaBase.AddHours(i * intervalo);
+
+            // 2. Cria a dose para o banco (Status Pendente)
+            var novaDose = new Dose
             {
                 MedicamentoId = medId,
-                Hora = horaAtual.AddHours(i * intervalo).ToString(@"HH\:mm"),
-                Frequencia = "Automático",
-                Ativo = 1
+                NomeMedicamento = medicamento.Nome,
+                Status = "Pendente",
+                HorarioPrevisto = dataDose
             };
-            await App.Banco.InsertCronograma(novoHorario);
+            listaDosesParaBanco.Add(novaDose);
+
+            // 3. AGENDA A NOTIFICAÇÃO PARA CADA DOSE
+            var notif = new NotificationRequest
+            {
+                // O ID da notificação precisa ser ÚNICO. 
+                // Usamos o ID do med + o index para não sobrescrever
+                NotificationId = medId * 100 + i,
+                Title = "Hora do Remédio 💊",
+                Description = $"Tomar {medicamento.Nome}",
+                ReturningData = medId.ToString(), // Passa o ID do Medicamento para o banco atualizar
+                CategoryType = NotificationCategoryType.Status,
+                Schedule = new NotificationRequestSchedule
+                {
+                    NotifyTime = dataDose // Agenda para o horário futuro
+                },
+                Android = new AndroidOptions { LaunchAppWhenTapped = true }
+            };
+
+            await LocalNotificationCenter.Current.Show(notif);
         }
 
-        await DisplayAlert("Sucesso", $"Ciclo de {intervalo}h criado!", "OK");
-        CarregarMedicamentos(); // Recarrega a lista para mostrar o "6h/6h" na tela
+        // 4. Salva todas as doses de uma vez no banco
+        await App.Banco.InsertDoses(listaDosesParaBanco);
+
+        await DisplayAlert("Sucesso", $"Ciclo de {intervalo}h criado e notificações agendadas!", "OK");
+        CarregarMedicamentos();
     }
 
     private async void AoClicarCronograma(object sender, EventArgs e)
@@ -275,7 +299,7 @@ public partial class MainPage : ContentPage
     {
         try
         {
-            var lista = await App.Banco.GetMedicamentos();
+            var lista = await App.Banco.GetMedicamentosAtivos();
             listaMedicamentos.ItemsSource = lista;
         }
         catch (Exception ex)
@@ -286,34 +310,35 @@ public partial class MainPage : ContentPage
 
     private async void ToolbarItem_Clicked_1(object sender, EventArgs e)
     {
-        try
+        // 1. Busca os remédios salvos no banco SQLite configurado ontem
+        var lista = await App.Banco.GetMedicamentosAtivos();
+
+        if (lista == null || lista.Count == 0)
         {
-            // 1. Busca TODO o histórico (Monitoramento) do banco
-            var historico = await App.Banco.GetTodosHistorico();
-
-            if (historico == null || !historico.Any())
-            {
-                await DisplayAlert("Aviso", "Ainda não há registros de doses tomadas para exportar.", "OK");
-                return;
-            }
-
-            // 2. Gera o Hash baseado no histórico para garantir que os dados não foram alterados
-            string dadosParaHash = string.Join("|", historico.Select(h => $"{h.DataUso}-{h.Tomado}"));
-            string hashSeguro = SecurityHelper.GerarHash(dadosParaHash);
-
-            // 3. Gera o ARQUIVO PDF de MONITORAMENTO
-            string caminhoDoPdf = PdfService.GerarPdfMonitoramento(historico, hashSeguro);
-
-            // 4. Compartilha o arquivo
-            await Share.Default.RequestAsync(new ShareFileRequest
-            {
-                Title = "Relatório de Monitoramento - " + DateTime.Now.ToString("dd/MM/yyyy"),
-                File = new ShareFile(caminhoDoPdf)
-            });
+            await DisplayAlert("Prontuário", "Você ainda não tem remédios cadastrados.", "OK");
+            return;
         }
-        catch (Exception ex)
+
+        // 2. Monta o texto do prontuário formatado
+        string prontuario = $"📋 MEU PRONTUÁRIO - {DateTime.Now:dd/MM/yyyy}\n\n";
+        foreach (var m in lista)
         {
-            await DisplayAlert("Erro", "Falha ao gerar relatório de monitoramento: " + ex.Message, "OK");
+            prontuario += $"💊 {m.Nome} ({m.Dosagem})\n";
         }
+
+        // --- AQUI ENTRA A SEGURANÇA (VERONICA) ---
+        // Chamamos o SecurityHelper para proteger o texto
+        string hashSeguro = SecurityHelper.GerarHash(prontuario);
+
+        // 3. Abre a opção de compartilhar do celular (WhatsApp, E-mail, etc)
+        await Share.Default.RequestAsync(new ShareTextRequest
+        {
+            Title = "Compartilhar Prontuário (Protegido)",
+            Text = $"Hash de Segurança:\n{hashSeguro}",
+            Uri = "App Meu Remédio"
+
+        });
+        // ADICIONE ISSO ABAIXO DO SHARE:
+        await DisplayAlert("Sucesso", "Compartilhamento concluído! Retornando ao início...", "OK");
     }
 }

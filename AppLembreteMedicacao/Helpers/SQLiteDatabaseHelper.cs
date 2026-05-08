@@ -22,10 +22,17 @@ namespace AppLembreteMedicacao.Helpers
 
         // --- MEDICAMENTO ---
         public Task<int> InsertMedicamento(Medicamento m) => _conn.InsertAsync(m);
-        public Task<List<Medicamento>> GetMedicamentos() => _conn.Table<Medicamento>().ToListAsync();
+        // Busca apenas remédios que não foram "excluídos"
+        public Task<List<Medicamento>> GetMedicamentosAtivos() =>
+            _conn.Table<Medicamento>().Where(m => m.Ativo == 1).ToListAsync();
         public Task<Medicamento> GetMedicamentoPorId(int id) => _conn.Table<Medicamento>().Where(m => m.Id == id).FirstOrDefaultAsync();
         public Task<int> UpdateMedicamento(Medicamento m) => _conn.UpdateAsync(m);
         public Task<int> DeleteMedicamento(int id) => _conn.DeleteAsync<Medicamento>(id);
+        public async Task DesativarMedicamento(Medicamento m)
+        {
+            m.Ativo = 0; // Marca como inativo
+            await _conn.UpdateAsync(m);
+        }
 
         public async Task<Medicamento> GetUltimoMedicamento()
         {
@@ -99,25 +106,31 @@ namespace AppLembreteMedicacao.Helpers
             public async Task<int> AtualizarDoseParaTomado(int medicamentoId)
         {
             // 1. Busca a dose mais antiga que ainda está "Pendente" para esse remédio
-            var dose = await _conn.Table<Dose>()
-                                .Where(d => d.MedicamentoId == medicamentoId && d.Status == "Pendente")
-                                .OrderBy(d => d.HorarioPrevisto)
-                                .FirstOrDefaultAsync();
+            var doses = await _conn.Table<Dose>()
+                           .Where(d => d.MedicamentoId == medicamentoId)
+                           .ToListAsync();
 
-            if (dose != null)
+            // Filtra a primeira que não seja "Tomado"
+            var proximaDose = doses.OrderBy(d => d.HorarioPrevisto)
+                                   .FirstOrDefault(d => d.Status != "Tomado");
+
+            if (proximaDose != null)
             {
-                // 2. Atualiza as informações
-                dose.Status = "Tomado";
-                dose.DataHoraTomada = DateTime.Now; // Registra o momento exato do clique
-
-                // 3. Salva a alteração no banco
-                return await _conn.UpdateAsync(dose);
+                proximaDose.Status = "Tomado";
+                proximaDose.DataHoraTomada = DateTime.Now;
+                return await _conn.UpdateAsync(proximaDose);
             }
+            return 0;
+        } // Nenhuma dose pendente encontrada
 
-            return 0; // Nenhuma dose pendente encontrada
-        }
-        
+
         // --- USUÁRIO ---
+        public Task<Usuario> GetPaciente()
+        {
+            return _conn.Table<Usuario>()
+                        .Where(u => u.TipoPerfil == "Paciente")
+                        .FirstOrDefaultAsync();
+        }
         public Task<int> InsertUsuario(Usuario u) => _conn.InsertAsync(u);
         public Task<Usuario> GetUsuarioEmail(string email) =>
             _conn.Table<Usuario>().Where(u => u.Email == email).FirstOrDefaultAsync();
@@ -128,6 +141,8 @@ namespace AppLembreteMedicacao.Helpers
                                      .FirstOrDefaultAsync();
 
             return usuario != null;
+
+
         }
     }
 }

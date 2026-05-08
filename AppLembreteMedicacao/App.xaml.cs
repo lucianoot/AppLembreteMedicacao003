@@ -66,7 +66,7 @@ public partial class App : Application
             {
                 try
                 {
-                    var lista = await App.Banco.GetMedicamentos();
+                    var lista = await App.Banco.GetMedicamentosAtivos();
                     var med = lista.FirstOrDefault(m => m.Id == idMed);
 
                     string nomeMed = med?.Nome ?? "Medicamento";

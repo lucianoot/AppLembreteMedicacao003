@@ -24,4 +24,4 @@ namespace AppLembreteMedicacao.Models
 
         public int Ativo { get; set; } = 1;
     }
-}
+    }

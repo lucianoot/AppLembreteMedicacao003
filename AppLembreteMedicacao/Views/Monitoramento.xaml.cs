@@ -29,22 +29,27 @@ public partial class Monitoramento : ContentPage
     {
         try
         {
-            List<HistoricoUso> listaBruta;
+            // 1. Busca o paciente diretamente
+            var paciente = await App.Banco.GetPaciente();
 
-            // Se o ID for 0, busca tudo (visão do Médico/Responsável)
-            // Se tiver ID, busca só daquele remédio específico
-            if (_medicamentoId == 0)
+            if (paciente != null)
             {
-                listaBruta = await App.Banco.GetTodosHistorico();
+                lblNomePaciente.Text = paciente.Nome.ToUpper();
             }
             else
             {
-                listaBruta = await App.Banco.GetHistorico(_medicamentoId);
+                lblNomePaciente.Text = "PACIENTE NÃO ENCONTRADO";
             }
+            List<HistoricoUso> listaBruta;
 
-            if (listaBruta != null)
+            if (_medicamentoId == 0)
+                listaBruta = await App.Banco.GetTodosHistorico();
+            else
+                listaBruta = await App.Banco.GetHistorico(_medicamentoId);
+
+            if (listaBruta != null && listaBruta.Any())
             {
-                // Formata a lista para exibir textos bonitos na tela
+                // 1. Lógica para a Lista Detalhada
                 var listaFormatada = listaBruta.Select(h => new
                 {
                     NomeMedicamento = h.NomeMedicamento,
@@ -54,11 +59,28 @@ public partial class Monitoramento : ContentPage
                 }).ToList();
 
                 listaHistorico.ItemsSource = listaFormatada;
+
+                // 2. NOVA LÓGICA: Cálculo de Adesão por Medicamento
+                var resumoAdesao = listaBruta
+                    .GroupBy(h => h.NomeMedicamento)
+                    .Select(g => new
+                    {
+                        Nome = g.Key,
+                        Total = g.Count(),
+                        Tomadas = g.Count(x => x.Tomado),
+                        // Cálculo da porcentagem (ex: 0.75 para 75%)
+                        Percentual = (double)g.Count(x => x.Tomado) / g.Count(),
+                        CorAdesao = ((double)g.Count(x => x.Tomado) / g.Count()) >= 0.8 ? Colors.Green : Colors.Orange
+                    })
+                    .ToList();
+
+                // Vincula ao novo componente visual que vamos adicionar no XAML
+                listaEstatisticas.ItemsSource = resumoAdesao;
             }
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", "Não foi possível carregar o histórico: " + ex.Message, "OK");
+            await DisplayAlert("Erro", "Falha ao processar monitoramento: " + ex.Message, "OK");
         }
     }
     private async void OnSairClicked(object sender, EventArgs e)
