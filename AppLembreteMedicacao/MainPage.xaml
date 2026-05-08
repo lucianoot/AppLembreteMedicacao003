@@ -2,7 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="AppLembreteMedicacao.MainPage"
-             Title="Meu Remédio">
+             Title="Meu Remédio"
+             BackgroundColor="White">
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Compartilhar Prontuário" 
@@ -16,84 +17,215 @@
 
     <Grid>
         <ScrollView>
-            <VerticalStackLayout Padding="30" Spacing="15">
-                <Label Text="Cadastro de Remédio" FontSize="24" HorizontalOptions="Center" FontAttributes="Bold" />
+            <VerticalStackLayout Padding="30"
+                         Spacing="15">
 
-                <Entry x:Name="entNome" Placeholder="Nome do Remédio"/>
-                <Entry x:Name="entDose" Placeholder="Dosagem (ex: 500mg)"/>
+                <!-- TÍTULO -->
+                <Label Text="Cadastro de Remédio"
+              FontSize="24"
+              HorizontalOptions="Center"
+              FontAttributes="Bold"
+              TextColor="#0056b3" />
 
-                <Label Text="Data de Início:" />
-                <DatePicker x:Name="dtInicio" Format="dd/MM/yyyy"/>
+                <!-- NOME -->
+                <Label Text="Nome do Remédio"
+              FontSize="14"
+              TextColor="#0056b3"
+              FontAttributes="Bold"/>
 
-                <Label Text="Data Final:" />
-                <DatePicker x:Name="dtFim" Format="dd/MM/yyyy"/>
+                <Frame BorderColor="#0056b3"
+              CornerRadius="10"
+              Padding="10"
+              BackgroundColor="White">
 
-                <Button Text="Salvar Medicamento" Clicked="AoClicarSalvar"
-                        BackgroundColor="#27ae60" TextColor="White"/>
+                    <Entry x:Name="entNome"
+              Placeholder="Digite o nome do remédio"
+              TextColor="#333333"
+              PlaceholderColor="Gray"
+              BackgroundColor="Transparent"/>
 
+                </Frame>
+
+                <!-- DOSAGEM -->
+                <Label Text="Dosagem"
+              FontSize="14"
+              TextColor="#0056b3"
+              FontAttributes="Bold"/>
+
+                <Frame BorderColor="#0056b3"
+              CornerRadius="10"
+              Padding="10"
+              BackgroundColor="White">
+
+                    <Entry x:Name="entDose"
+              Placeholder="Ex: 500mg"
+              TextColor="#333333"
+              PlaceholderColor="Gray"
+              BackgroundColor="Transparent"/>
+
+                </Frame>
+
+                <!-- DATA INÍCIO -->
+                <Label Text="Data de Início"
+              FontSize="14"
+              TextColor="#0056b3"
+              FontAttributes="Bold"/>
+
+                <Frame BorderColor="#0056b3"
+              CornerRadius="10"
+              Padding="10"
+              BackgroundColor="White">
+
+                    <DatePicker x:Name="dtInicio"
+                   Format="dd/MM/yyyy"
+                   TextColor="#333333"
+                   BackgroundColor="Transparent"/>
+
+                </Frame>
+
+                <!-- DATA FINAL -->
+                <Label Text="Data Final"
+              FontSize="14"
+              TextColor="#0056b3"
+              FontAttributes="Bold"/>
+
+                <Frame BorderColor="#0056b3"
+              CornerRadius="10"
+              Padding="10"
+              BackgroundColor="White">
+
+                    <DatePicker x:Name="dtFim"
+                   Format="dd/MM/yyyy"
+                   TextColor="#333333"
+                   BackgroundColor="Transparent"/>
+
+                </Frame>
+
+                <!-- BOTÃO SALVAR -->
+                <Button Text="Salvar Medicamento"
+               Clicked="AoClicarSalvar"
+               BackgroundColor="#0056b3"
+               TextColor="White"
+               FontAttributes="Bold"
+               CornerRadius="10"
+               HeightRequest="50"/>
+
+                <!-- BOTÃO CRONOGRAMA -->
                 <Button x:Name="btnCronograma"
-                        Text="Ver Último Cronograma"
-                        Clicked="AoClicarCronograma"
-                        BackgroundColor="#6A0DAD"
-                        TextColor="White"
-                        CornerRadius="10"
-                        HeightRequest="50"
-                        Margin="0,10,0,0"/>
+               Text="Ver Último Cronograma"
+               Clicked="AoClicarCronograma"
+               BackgroundColor="#5271ff"
+               TextColor="White"
+               CornerRadius="10"
+               HeightRequest="50"
+               FontAttributes="Bold"
+               Margin="0,5,0,0"/>
 
-                <BoxView HeightRequest="1" Color="LightGray" Margin="0,10" />
+                <!-- DIVISÓRIA -->
+                <BoxView HeightRequest="1"
+                Color="#E0E0E0"
+                Margin="0,10"/>
 
-                <Label Text="Seus Remédios (Toque para gerenciar):" FontAttributes="Bold" FontSize="16" />
+                <!-- LISTA -->
+                <Label Text="Seus Remédios (Toque para gerenciar):"
+              FontAttributes="Bold"
+              FontSize="16"
+              TextColor="#0056b3"/>
 
-                <CollectionView x:Name="listaMedicamentos" 
-                                EmptyView="Nenhum remédio cadastrado ainda."
-                                SelectionMode="None"
-                                Margin="0,0,0,80">
+                <CollectionView x:Name="listaMedicamentos"
+                       EmptyView="Nenhum remédio cadastrado ainda."
+                       SelectionMode="None"
+                       Margin="0,0,0,80">
+
                     <CollectionView.ItemTemplate>
+
                         <DataTemplate>
-                            <Frame BorderColor="#27ae60" CornerRadius="10" Margin="0,5" Padding="15">
+
+                            <!-- CARD -->
+                            <Frame BorderColor="#0056b3"
+              CornerRadius="10"
+              Margin="0,5"
+              Padding="15"
+              BackgroundColor="White">
+
                                 <Frame.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnMedicamentoTapped" CommandParameter="{Binding .}" />
+                                    <TapGestureRecognizer Tapped="OnMedicamentoTapped"
+                                    CommandParameter="{Binding .}" />
                                 </Frame.GestureRecognizers>
 
                                 <Grid ColumnDefinitions="*, Auto">
-                                    <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
-                                        <Label Text="{Binding Nome}" FontAttributes="Bold" FontSize="18" />
 
-                                        <!-- ORGANIZAÇÃO DA DOSE E INTERVALO NA MESMA LINHA -->
+                                    <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+
+                                        <!-- NOME -->
+                                        <Label Text="{Binding Nome}"
+                     FontAttributes="Bold"
+                     FontSize="18"
+                     TextColor="#333333"/>
+
+                                        <!-- LINHA -->
                                         <HorizontalStackLayout Spacing="5">
-                                            <Label Text="{Binding Dosagem}" FontSize="14" TextColor="Gray" />
-                                            <Label Text="•" FontSize="14" TextColor="Gray" />
-                                            <!-- AQUI EXIBE O INTERVALO (EX: 8h/8h) -->
-                                            <Label Text="{Binding IntervaloHoras, StringFormat='{0}h/{0}h'}" 
-                                                   FontSize="14" 
-                                                   TextColor="#27ae60" 
-                                                   FontAttributes="Italic" />
+
+                                            <!-- DOSE -->
+                                            <Label Text="{Binding Dosagem}"
+                     FontSize="14"
+                     TextColor="Gray" />
+
+                                            <Label Text="•"
+                     FontSize="14"
+                     TextColor="Gray" />
+
+                                            <!-- INTERVALO -->
+                                            <Label Text="{Binding IntervaloHoras, StringFormat='{0}h/{0}h'}"
+                     FontSize="14"
+                     TextColor="#0056b3"
+                     FontAttributes="Italic"/>
+
                                         </HorizontalStackLayout>
+
                                     </VerticalStackLayout>
 
-                                    <Label Grid.Column="1" Text="➔" VerticalOptions="Center" TextColor="#27ae60" FontSize="20" />
+                                    <!-- SETA -->
+                                    <Label Grid.Column="1"
+                     Text="➔"
+                     VerticalOptions="Center"
+                     TextColor="#0056b3"
+                     FontSize="20"/>
+
                                 </Grid>
+
                             </Frame>
+
                         </DataTemplate>
+
                     </CollectionView.ItemTemplate>
+
                 </CollectionView>
 
             </VerticalStackLayout>
+
         </ScrollView>
 
-        <Button Text="+" 
+        <!-- BOTÃO FLUTUANTE -->
+        <Button Text="+"
                 Clicked="AoClicarNovoRemedio"
-                BackgroundColor="#27ae60"
+                BackgroundColor="#0056b3"
                 TextColor="White"
                 FontSize="28"
                 FontAttributes="Bold"
-                HeightRequest="60" 
+                HeightRequest="60"
                 WidthRequest="60"
                 CornerRadius="30"
                 HorizontalOptions="End"
                 VerticalOptions="End"
                 Margin="0,0,25,25"
                 Padding="0"
-                Shadow="{Shadow Brush=Black, Offset='0,3', Radius=3, Opacity=0.2}"/>
+                Shadow="{Shadow Brush=Black,
+                                 Offset='0,3',
+                                 Radius=3,
+                                 Opacity=0.2}"/>
+
     </Grid>
+
 </ContentPage>
+
