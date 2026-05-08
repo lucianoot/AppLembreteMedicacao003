@@ -25,6 +25,8 @@ namespace AppLembreteMedicacao.Helpers
         // Busca apenas remédios que não foram "excluídos"
         public Task<List<Medicamento>> GetMedicamentosAtivos() =>
             _conn.Table<Medicamento>().Where(m => m.Ativo == 1).ToListAsync();
+        //adicionado 07/05/26
+        public Task<List<Medicamento>> GetMedicamentos() => _conn.Table<Medicamento>().ToListAsync();
         public Task<Medicamento> GetMedicamentoPorId(int id) => _conn.Table<Medicamento>().Where(m => m.Id == id).FirstOrDefaultAsync();
         public Task<int> UpdateMedicamento(Medicamento m) => _conn.UpdateAsync(m);
         public Task<int> DeleteMedicamento(int id) => _conn.DeleteAsync<Medicamento>(id);

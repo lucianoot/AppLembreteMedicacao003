@@ -308,7 +308,7 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private async void ToolbarItem_Clicked_1(object sender, EventArgs e)
+   /* private async void ToolbarItem_Clicked_1(object sender, EventArgs e)
     {
         // 1. Busca os remédios salvos no banco SQLite configurado ontem
         var lista = await App.Banco.GetMedicamentosAtivos();
@@ -340,5 +340,46 @@ public partial class MainPage : ContentPage
         });
         // ADICIONE ISSO ABAIXO DO SHARE:
         await DisplayAlert("Sucesso", "Compartilhamento concluído! Retornando ao início...", "OK");
+    }*/
+
+    private async void ToolbarItem_Clicked(object sender, EventArgs e)
+    {
+   
+        try
+        {
+            var lista = await App.Banco.GetMedicamentos();
+            if (lista == null || !lista.Any())
+            {
+                await DisplayAlert("Prontuário", "Não há registros para compartilhar.", "OK");
+                return;
+            }
+
+            string cabecalho = $"📋 MEU PRONTUÁRIO - {DateTime.Now:dd/MM/yyyy}\n";
+            cabecalho += "------------------------------------------\n\n";
+            string corpo = "";
+
+            foreach (var m in lista)
+            {
+                string status = m.Ativo == 1 ? "✅ Ativo" : "❌ Inativo";
+                corpo += $"💊 Remédio: {m.Nome}\n   " +
+                         $"Dose: {m.Dosagem}\n   " +
+                         $"Início: {m.DataInicio:dd/MM/yyyy}\n   " +
+                         $"Status: {status}\n";
+                corpo += "------------------------------------------\n";
+            }
+
+            string hashSeguro = SecurityHelper.GerarHash(corpo);
+            string textoFinal = cabecalho + corpo + $"\nHash de Segurança: {hashSeguro}\n\n" +
+                                                    $"Gerado pelo App Meu Remédio.";
+
+            await Share.Default.RequestAsync(new ShareTextRequest
+            {
+                Title = "Compartilhar Prontuário",
+                Text = textoFinal
+            });
+        }
+        catch (Exception ex) { await DisplayAlert("Erro", ex.Message, "OK"); }
     }
+
 }
+    

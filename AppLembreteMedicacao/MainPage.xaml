@@ -6,7 +6,7 @@
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Compartilhar Prontuário" 
-                     Clicked="ToolbarItem_Clicked_1" 
+                     Clicked="ToolbarItem_Clicked"
                      Order="Primary" />
 
         <ToolbarItem Text="Sair" 
