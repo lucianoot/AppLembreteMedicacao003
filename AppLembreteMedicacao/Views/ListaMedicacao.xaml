@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AppLembreteMedicacao.Views.ListaMedicacao"
+             Title="Meus Remédios"
+             BackgroundColor="White">
+
+    <Grid RowDefinitions="Auto, *" Padding="20">
+
+        <Label Grid.Row="0" Text="Meus Medicamentos" FontSize="24" FontAttributes="Bold" TextColor="#2563EB" Margin="0,0,0,10"/>
+
+        <CollectionView x:Name="listaMedicamentos" Grid.Row="1">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="0,0,0,12" 
+                           Padding="15" 
+                           CornerRadius="10" 
+                           BackgroundColor="#F3F4F6" 
+                           HasShadow="False"
+                           BorderColor="Transparent">
+
+                        <Grid ColumnDefinitions="*, Auto">
+                            <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                                <Label Text="{Binding Nome}" 
+                                       FontSize="18" 
+                                       FontAttributes="Bold" 
+                                       TextColor="Black" />
+                                <Label Text="{Binding Dosagem}" 
+                                       TextColor="#4B5563" />
+                            </VerticalStackLayout>
+
+                            <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
+                                <Button Text="TOMAR" 
+                                        Clicked="OnTomarClicked" 
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="#2563EB" 
+                                        TextColor="White"
+                                        HeightRequest="45"
+                                        CornerRadius="8"/>
+
+                                <Button Text="🕒" 
+                                        Clicked="OnVerHistoricoClicked" 
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="White" 
+                                        TextColor="#2563EB"
+                                        BorderColor="#2563EB"
+                                        BorderWidth="1"
+                                        WidthRequest="50"
+                                        HeightRequest="45"
+                                        CornerRadius="8"/>
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>
