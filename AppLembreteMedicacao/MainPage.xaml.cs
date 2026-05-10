@@ -23,6 +23,14 @@ public partial class MainPage : ContentPage
         btnCronograma.Released += async (s, e) => await btnCronograma.ScaleTo(1, 100);
 
     }
+
+
+    
+    private async void OnVerHistoricoClicked(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new HistoricoDosesPage());
+    }
+
     private void ConfigurarCategoriasDeNotificacao()
     {
         var acoes = new HashSet<NotificationAction>
@@ -289,6 +297,15 @@ public partial class MainPage : ContentPage
             System.Diagnostics.Debug.WriteLine($"Erro ao focar: {ex.Message}");
         }
     }
+
+    private async void AoClicarVerHistorico(object sender, EventArgs e)
+    {
+        // Apenas navega para a página de histórico que você criou
+        await Navigation.PushAsync(new HistoricoDosesPage());
+    }
+
+
+
     protected override void OnAppearing()
     {
         base.OnAppearing();
@@ -299,48 +316,53 @@ public partial class MainPage : ContentPage
     {
         try
         {
+            // 1. Busca os remédios ativos no banco de dados
             var lista = await App.Banco.GetMedicamentosAtivos();
+
+            // 2. CORREÇÃO: Usa o nome exato que está no seu x:Name do XAML
             listaMedicamentos.ItemsSource = lista;
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Erro: {ex.Message}");
+            // Registra o erro caso algo dê errado na busca
+            System.Diagnostics.Debug.WriteLine($"Erro ao carregar: {ex.Message}");
         }
     }
 
-   /* private async void ToolbarItem_Clicked_1(object sender, EventArgs e)
-    {
-        // 1. Busca os remédios salvos no banco SQLite configurado ontem
-        var lista = await App.Banco.GetMedicamentosAtivos();
 
-        if (lista == null || lista.Count == 0)
-        {
-            await DisplayAlert("Prontuário", "Você ainda não tem remédios cadastrados.", "OK");
-            return;
-        }
+    /* private async void ToolbarItem_Clicked_1(object sender, EventArgs e)
+     {
+         // 1. Busca os remédios salvos no banco SQLite configurado ontem
+         var lista = await App.Banco.GetMedicamentosAtivos();
 
-        // 2. Monta o texto do prontuário formatado
-        string prontuario = $"📋 MEU PRONTUÁRIO - {DateTime.Now:dd/MM/yyyy}\n\n";
-        foreach (var m in lista)
-        {
-            prontuario += $"💊 {m.Nome} ({m.Dosagem})\n";
-        }
+         if (lista == null || lista.Count == 0)
+         {
+             await DisplayAlert("Prontuário", "Você ainda não tem remédios cadastrados.", "OK");
+             return;
+         }
 
-        // --- AQUI ENTRA A SEGURANÇA (VERONICA) ---
-        // Chamamos o SecurityHelper para proteger o texto
-        string hashSeguro = SecurityHelper.GerarHash(prontuario);
+         // 2. Monta o texto do prontuário formatado
+         string prontuario = $"📋 MEU PRONTUÁRIO - {DateTime.Now:dd/MM/yyyy}\n\n";
+         foreach (var m in lista)
+         {
+             prontuario += $"💊 {m.Nome} ({m.Dosagem})\n";
+         }
 
-        // 3. Abre a opção de compartilhar do celular (WhatsApp, E-mail, etc)
-        await Share.Default.RequestAsync(new ShareTextRequest
-        {
-            Title = "Compartilhar Prontuário (Protegido)",
-            Text = $"Hash de Segurança:\n{hashSeguro}",
-            Uri = "App Meu Remédio"
+         // --- AQUI ENTRA A SEGURANÇA (VERONICA) ---
+         // Chamamos o SecurityHelper para proteger o texto
+         string hashSeguro = SecurityHelper.GerarHash(prontuario);
 
-        });
-        // ADICIONE ISSO ABAIXO DO SHARE:
-        await DisplayAlert("Sucesso", "Compartilhamento concluído! Retornando ao início...", "OK");
-    }*/
+         // 3. Abre a opção de compartilhar do celular (WhatsApp, E-mail, etc)
+         await Share.Default.RequestAsync(new ShareTextRequest
+         {
+             Title = "Compartilhar Prontuário (Protegido)",
+             Text = $"Hash de Segurança:\n{hashSeguro}",
+             Uri = "App Meu Remédio"
+
+         });
+         // ADICIONE ISSO ABAIXO DO SHARE:
+         await DisplayAlert("Sucesso", "Compartilhamento concluído! Retornando ao início...", "OK");
+     }*/
 
     private async void ToolbarItem_Clicked(object sender, EventArgs e)
     {

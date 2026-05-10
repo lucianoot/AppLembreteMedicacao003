@@ -3,46 +3,71 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="AppLembreteMedicacao.Views.ConfirmacaoPage"
              Title="Confirmação de Dose"
-             BackgroundColor="#F5F5F5">
+             BackgroundColor="White">
 
-    <VerticalStackLayout Spacing="25" Padding="30" VerticalOptions="Center">
+    <Grid VerticalOptions="Center" Padding="30">
+        <Frame BorderColor="#0056b3" 
+               CornerRadius="20" 
+               Padding="25" 
+               HasShadow="True"
+               BackgroundColor="White">
 
-        <Image Source="pill_icon.png" HeightRequest="100" HorizontalOptions="Center" />
+            <VerticalStackLayout Spacing="20">
 
-        <Label x:Name="lblMensagem"
-               Text="Carregando informações..."
-               FontSize="20"
-               FontAttributes="Bold"
-               TextColor="#333"
-               HorizontalTextAlignment="Center" />
+                <Label Text="💊" 
+                       FontSize="60" 
+                       HorizontalOptions="Center" 
+                       Margin="0,0,0,10"/>
 
-        <Label Text="Você tomou este medicamento agora?"
-               FontSize="16"
-               TextColor="#666"
-               HorizontalTextAlignment="Center" />
+                <Label Text="Confirmação"
+                       FontSize="24"
+                       HorizontalOptions="Center"
+                       FontAttributes="Bold"
+                       TextColor="#0056b3" />
 
-        <Button Text="Sim, eu tomei"
-                Clicked="OnSimClicked"
-                BackgroundColor="#28A745"
-                TextColor="White"
-                HeightRequest="60"
-                CornerRadius="10"
-                FontSize="18" />
+                <Label x:Name="lblMensagem"
+                       Text="Carregando informações..."
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       TextColor="#333"
+                       HorizontalTextAlignment="Center" />
 
-        <Button Text="Não tomei"
-                Clicked="OnNaoClicked"
-                BackgroundColor="#DC3545"
-                TextColor="White"
-                HeightRequest="60"
-                CornerRadius="10"
-                FontSize="18" />
+                <Label Text="Você tomou este medicamento agora?"
+                       FontSize="15"
+                       TextColor="Gray"
+                       HorizontalTextAlignment="Center" />
 
-        <Button Text="Cancelar"
-                Clicked="OnCancelarClicked"
-                BackgroundColor="Transparent"
-                TextColor="#666"
-                BorderColor="#666"
-                BorderWidth="1" />
+                <BoxView HeightRequest="1" Color="#E0E0E0" Margin="0,5"/>
 
-    </VerticalStackLayout>
+                <Button Text="Sim, eu tomei"
+                        Clicked="OnSimClicked"
+                        BackgroundColor="#28A745"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        HeightRequest="60"
+                        CornerRadius="15"
+                        FontSize="18" />
+
+                <Button Text="Não tomei agora"
+                        Clicked="OnNaoClicked"
+                        BackgroundColor="Transparent"
+                        TextColor="#DC3545"
+                        BorderColor="#DC3545"
+                        BorderWidth="2"
+                        FontAttributes="Bold"
+                        HeightRequest="55"
+                        CornerRadius="15"
+                        FontSize="16" />
+
+                <Button Text="Voltar / Cancelar"
+                        Clicked="OnCancelarClicked"
+                        BackgroundColor="Transparent"
+                        TextColor="#777777"
+                        FontAttributes="Italic"
+                        HeightRequest="45"
+                        FontSize="14" />
+
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
 </ContentPage>

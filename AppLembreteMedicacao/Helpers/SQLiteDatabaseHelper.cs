@@ -126,6 +126,29 @@ namespace AppLembreteMedicacao.Helpers
         } // Nenhuma dose pendente encontrada
 
 
+
+        // --- MÉTODO PARA CONVERTER USO EM DOSE (EXIBIÇÃO) ---
+        public async Task<List<HistoricoDose>> GetHistoricoParaExibicao()
+        {
+            // 1. Busca os dados brutos da tabela HistoricoUso
+            var listaBruta = await _conn.Table<HistoricoUso>()
+                                        .OrderByDescending(h => h.DataUso)
+                                        .ToListAsync();
+
+            // 2. Converte para a classe HistoricoDose que tem a lógica da cor
+            var listaColorida = listaBruta.Select(h => new HistoricoDose
+            {
+                Id = h.Id,
+                NomeMedicamento = h.NomeMedicamento,
+                DataHora = h.DataUso,
+                // Se h.Tomado for true, salva "Tomado", senão "Pendente"
+                Status = h.Tomado ? "Tomado" : "Pendente"
+            }).ToList();
+
+            return listaColorida;
+        }
+
+
         // --- USUÁRIO ---
         public Task<Usuario> GetPaciente()
         {

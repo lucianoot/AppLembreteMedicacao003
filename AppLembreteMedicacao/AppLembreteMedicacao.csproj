@@ -76,6 +76,9 @@
 	  <Compile Update="Views\ConfirmacaoPage.xaml.cs">
 	    <DependentUpon>ConfirmacaoPage.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\HistoricoDosesPage.xaml.cs">
+	    <DependentUpon>HistoricoDosesPage.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -98,6 +101,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Monitoramento.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\HistoricoDosesPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Novomedicacao.xaml">
