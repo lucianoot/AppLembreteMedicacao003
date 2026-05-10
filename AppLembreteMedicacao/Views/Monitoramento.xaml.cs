@@ -7,41 +7,33 @@ public partial class Monitoramento : ContentPage
 {
     private int _medicamentoId = 0;
 
-    // CONSTRUTOR VAZIO (Para o Médico/Responsável conseguir abrir a tela)
     public Monitoramento()
     {
         InitializeComponent();
-        // Construtor para quando você clica na lista
     }
+
     public Monitoramento(int medicamentoId)
     {
         InitializeComponent();
         _medicamentoId = medicamentoId;
-
     }
+
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-
-        await CarregarHistorico();
+        await CarregarDadosMonitoramento();
     }
-    private async Task CarregarHistorico()
+
+    private async Task CarregarDadosMonitoramento()
     {
         try
         {
-            // 1. Busca o paciente diretamente
+            // Busca dados do paciente
             var paciente = await App.Banco.GetPaciente();
+            lblNomePaciente.Text = paciente?.Nome?.ToUpper() ?? "PACIENTE";
 
-            if (paciente != null)
-            {
-                lblNomePaciente.Text = paciente.Nome.ToUpper();
-            }
-            else
-            {
-                lblNomePaciente.Text = "PACIENTE NÃO ENCONTRADO";
-            }
+            // Busca histórico bruto
             List<HistoricoUso> listaBruta;
-
             if (_medicamentoId == 0)
                 listaBruta = await App.Banco.GetTodosHistorico();
             else
@@ -49,46 +41,46 @@ public partial class Monitoramento : ContentPage
 
             if (listaBruta != null && listaBruta.Any())
             {
-                // 1. Lógica para a Lista Detalhada
-                var listaFormatada = listaBruta.Select(h => new
-                {
-                    NomeMedicamento = h.NomeMedicamento,
-                    DataUso = h.DataUso.ToString("dd/MM/yyyy HH:mm"),
-                    TomadoTexto = h.Tomado ? "Tomou ✔" : "Não tomou ❌",
-                    CorStatus = h.Tomado ? Colors.Green : Colors.Red
-                }).ToList();
-
-                listaHistorico.ItemsSource = listaFormatada;
-
-                // 2. NOVA LÓGICA: Cálculo de Adesão por Medicamento
+                // LÓGICA DO FAROL
                 var resumoAdesao = listaBruta
                     .GroupBy(h => h.NomeMedicamento)
-                    .Select(g => new
+                    .Select(g => 
                     {
-                        Nome = g.Key,
-                        Total = g.Count(),
-                        Tomadas = g.Count(x => x.Tomado),
-                        // Cálculo da porcentagem (ex: 0.75 para 75%)
-                        Percentual = (double)g.Count(x => x.Tomado) / g.Count(),
-                        CorAdesao = ((double)g.Count(x => x.Tomado) / g.Count()) >= 0.8 ? Colors.Green : Colors.Orange
+                        int total = g.Count();
+                        int tomadas = g.Count(x => x.Tomado);
+                        double perc = (double)tomadas / total;
+
+                        // Definição das cores do Farol
+                        Color corFarol;
+                        if (perc >= 0.8) corFarol = Colors.Green;       // Verde: Bom
+                        else if (perc >= 0.5) corFarol = Colors.Orange; // Laranja: Atenção
+                        else corFarol = Colors.Red;                    // Vermelho: Crítico
+
+                        return new
+                        {
+                            Nome = g.Key,
+                            Total = total,
+                            Tomadas = tomadas,
+                            Percentual = perc,
+                            CorStatus = corFarol
+                        };
                     })
+                    .OrderByDescending(x => x.Percentual) // Opcional: Mostra os melhores primeiro
                     .ToList();
 
-                // Vincula ao novo componente visual que vamos adicionar no XAML
                 listaEstatisticas.ItemsSource = resumoAdesao;
             }
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", "Falha ao processar monitoramento: " + ex.Message, "OK");
+            await DisplayAlert("Erro", "Erro ao carregar relatório: " + ex.Message, "OK");
         }
     }
+
     private async void OnSairClicked(object sender, EventArgs e)
     {
-        bool confirm = await DisplayAlert("Sair", "Deseja realmente deslogar?", "Sim", "Não");
-        if (confirm)
+        if (await DisplayAlert("Sair", "Deseja realmente sair?", "Sim", "Não"))
         {
-            // Volta para a tela de login para permitir trocar de usuário
             Application.Current.MainPage = new NavigationPage(new Login());
         }
     }

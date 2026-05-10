@@ -6,6 +6,10 @@
              BackgroundColor="White">
 
     <VerticalStackLayout Padding="30" Spacing="20">
+        
+        
+        
+        
 
         <Label Text="Entrar"
                FontSize="26"

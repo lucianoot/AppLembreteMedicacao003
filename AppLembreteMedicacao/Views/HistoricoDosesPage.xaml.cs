@@ -16,6 +16,10 @@ namespace AppLembreteMedicacao.Views
             listaHistorico.ItemsSource = Lista;
         }
 
+
+
+
+
         // Atualiza os dados toda vez que a tela for aberta
         protected override async void OnAppearing()
         {
