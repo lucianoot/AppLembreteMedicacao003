@@ -5,6 +5,7 @@ using Microsoft.Maui.Storage;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
 
+
 namespace AppLembreteMedicacao;
 
 public partial class MainPage : ContentPage
@@ -22,6 +23,10 @@ public partial class MainPage : ContentPage
         btnCronograma.Pressed += async (s, e) => await btnCronograma.ScaleTo(1.2, 100);
         btnCronograma.Released += async (s, e) => await btnCronograma.ScaleTo(1, 100);
 
+        //Data mínima
+        dtInicio.MinimumDate = new DateTime(2000, 1, 1);
+        // Impede selecionar uma data futura apenas para a Data Final (V)
+        dtFim.MaximumDate = new DateTime(2100, 12, 31);
     }
 
 
@@ -124,9 +129,17 @@ public partial class MainPage : ContentPage
     // Método para salvar o remédio (campos da tela)
     private async void AoClicarSalvar(object sender, EventArgs e)
     {
+
         if (string.IsNullOrWhiteSpace(entNome.Text))
         {
             await DisplayAlert("Erro", "Por favor, preencha o nome do remédio.", "OK");
+            return;
+        }
+
+        // 2. VALIDAÇÃO DE DATA (Inserida aqui para travar o salvamento se estiver errado)10/05 (V)
+        if (dtFim.Date < dtInicio.Date)
+        {
+            await DisplayAlert("Data Inválida", "A data final não pode ser anterior à data de início.", "OK");
             return;
         }
 
