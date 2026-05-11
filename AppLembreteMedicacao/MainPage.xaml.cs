@@ -116,11 +116,24 @@ public partial class MainPage : ContentPage
                 break;
 
             case "Remover":
-                bool confirmar = await DisplayAlert("Atenção", $"Excluir {medicamento.Nome}?", "Sim", "Não");
+                bool confirmar = await DisplayAlert("Atenção", $"Deseja interromper o tratamento de {medicamento.Nome}?", "Sim", "Não");
                 if (confirmar)
                 {
-                    await App.Banco.DeleteMedicamento(medicamento.Id);
-                    CarregarMedicamentos(); // Atualiza a lista na tela
+                    await App.Banco.DesativarMedicamento(medicamento);
+
+                    // CANCELA AS NOTIFICAÇÕES AGENDADAS
+                    LocalNotificationCenter.Current.Cancel(medicamento.Id);
+
+                    // Cancela as notificações do ciclo (6h, 8h, 12h...)
+    
+                    for (int i = 0; i < 20; i++)
+                    {
+                        LocalNotificationCenter.Current.Cancel(medicamento.Id * 100 + i);
+                    }
+
+                    await DisplayAlert("Sucesso", "Tratamento encerrado e notificações removidas.", "OK");
+
+ CarregarMedicamentos();
                 }
                 break;
         }

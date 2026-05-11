@@ -13,11 +13,11 @@ namespace AppLembreteMedicacao.Helpers
         public SQLiteDatabaseHelper(string path)
         {
             _conn = new SQLiteAsyncConnection(path);
-            _conn.CreateTableAsync<Usuario>().Wait();
             _conn.CreateTableAsync<Medicamento>().Wait();
             _conn.CreateTableAsync<Cronograma>().Wait();
             _conn.CreateTableAsync<HistoricoUso>().Wait();
             _conn.CreateTableAsync<Dose>().Wait();
+            _conn.CreateTableAsync<Usuario>().Wait();
         }
 
         // --- MEDICAMENTO ---
