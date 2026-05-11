@@ -68,10 +68,10 @@
 
                                 <!-- BOTÃO REMOVER -->
                                 <Button Grid.Column="2"
-                                        Text="❌"
+                                        Text="🗑️"
                                         BackgroundColor="Transparent"
                                         TextColor="Red"
-                                        FontSize="16"
+                                        FontSize="20"
                                         VerticalOptions="Center"
                                         Clicked="AoClicarRemoverHorario"
                                         CommandParameter="{Binding Id}" />

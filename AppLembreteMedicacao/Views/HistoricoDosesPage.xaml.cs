@@ -17,9 +17,6 @@ namespace AppLembreteMedicacao.Views
         }
 
 
-
-
-
         // Atualiza os dados toda vez que a tela for aberta
         protected override async void OnAppearing()
         {
@@ -47,5 +44,6 @@ namespace AppLembreteMedicacao.Views
                 await DisplayAlert("Erro", "Não foi possível carregar o histórico: " + ex.Message, "OK");
             }
         }
+
     }
 }
