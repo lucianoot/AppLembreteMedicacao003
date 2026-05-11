@@ -44,7 +44,7 @@ namespace AppLembreteMedicacao.Views
                 txtEmail.Text = "";
                 pickerPerfil.SelectedIndex = -1;
                 // IR PARA TELA DE MEDICAMENTO
-                await Navigation.PushAsync(new Novomedicacao());
+                await Navigation.PushAsync(new MainPage());
             }
             catch (Exception ex)
             {
