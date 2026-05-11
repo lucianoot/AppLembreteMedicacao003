@@ -190,7 +190,7 @@ public partial class MainPage : ContentPage
                 await LocalNotificationCenter.Current.Show(notifNovo);
 
                 // mensagem
-                await DisplayAlert("Sucesso", "Medicamento cadastrado com notificação!", "OK");
+                await DisplayAlert("Sucesso", "Medicamento cadastrado!", "OK");
             }
             else
             {
@@ -341,41 +341,6 @@ public partial class MainPage : ContentPage
             System.Diagnostics.Debug.WriteLine($"Erro ao carregar: {ex.Message}");
         }
     }
-
-
-    /* private async void ToolbarItem_Clicked_1(object sender, EventArgs e)
-     {
-         // 1. Busca os remédios salvos no banco SQLite configurado ontem
-         var lista = await App.Banco.GetMedicamentosAtivos();
-
-         if (lista == null || lista.Count == 0)
-         {
-             await DisplayAlert("Prontuário", "Você ainda não tem remédios cadastrados.", "OK");
-             return;
-         }
-
-         // 2. Monta o texto do prontuário formatado
-         string prontuario = $"📋 MEU PRONTUÁRIO - {DateTime.Now:dd/MM/yyyy}\n\n";
-         foreach (var m in lista)
-         {
-             prontuario += $"💊 {m.Nome} ({m.Dosagem})\n";
-         }
-
-         // --- AQUI ENTRA A SEGURANÇA (VERONICA) ---
-         // Chamamos o SecurityHelper para proteger o texto
-         string hashSeguro = SecurityHelper.GerarHash(prontuario);
-
-         // 3. Abre a opção de compartilhar do celular (WhatsApp, E-mail, etc)
-         await Share.Default.RequestAsync(new ShareTextRequest
-         {
-             Title = "Compartilhar Prontuário (Protegido)",
-             Text = $"Hash de Segurança:\n{hashSeguro}",
-             Uri = "App Meu Remédio"
-
-         });
-         // ADICIONE ISSO ABAIXO DO SHARE:
-         await DisplayAlert("Sucesso", "Compartilhamento concluído! Retornando ao início...", "OK");
-     }*/
 
     private async void ToolbarItem_Clicked(object sender, EventArgs e)
     {

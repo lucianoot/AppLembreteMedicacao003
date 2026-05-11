@@ -39,8 +39,7 @@
                            Padding="15"
                            BackgroundColor="White">
 
-                        <Grid ColumnDefinitions="*, Auto"
-                              RowDefinitions="Auto,Auto">
+                        <Grid ColumnDefinitions="*, Auto, Auto" RowDefinitions="Auto,Auto">
 
                             <VerticalStackLayout Grid.Row="0" Grid.Column="0">
                                 <Label Text="Medicamento" FontSize="11" TextColor="Gray" />
@@ -62,6 +61,7 @@
                                        FontAttributes="Bold"
                                        TextColor="White" />
                             </Frame>
+
 
                             <VerticalStackLayout Grid.Row="1"
                                                  Grid.Column="0"

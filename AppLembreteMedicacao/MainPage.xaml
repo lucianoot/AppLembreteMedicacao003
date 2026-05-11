@@ -80,7 +80,6 @@
 
 
 
-
                 <Button Text="Salvar Medicamento"
                         Clicked="AoClicarSalvar"
                         BackgroundColor="#0056b3"
