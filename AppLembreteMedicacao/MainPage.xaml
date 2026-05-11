@@ -58,6 +58,15 @@
                                 TextColor="#333333"
                                 BackgroundColor="Transparent"/>
                 </Frame>
+                <HorizontalStackLayout Spacing="10" Margin="5,0">
+                    <CheckBox x:Name="chkIsContinuo" 
+                              Color="#0056b3" 
+                              CheckedChanged="OnContinuoCheckedChanged" />
+                    <Label Text="Medicamento de Uso Contínuo" 
+                           VerticalOptions="Center" 
+                           TextColor="#333333"
+                           FontSize="14"/>
+                </HorizontalStackLayout>
 
                 <Label Text="Data Final"
                        FontSize="14"

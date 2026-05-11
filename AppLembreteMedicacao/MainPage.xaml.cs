@@ -4,6 +4,7 @@ using AppLembreteMedicacao.Views;
 using Microsoft.Maui.Storage;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
+using System;
 
 
 namespace AppLembreteMedicacao;
@@ -110,6 +111,7 @@ public partial class MainPage : ContentPage
                 entNome.Text = medicamento.Nome;
                 entDose.Text = medicamento.Dosagem;
                 dtInicio.Date = medicamento.DataInicio;
+                chkIsContinuo.IsChecked = medicamento.IsContinuo;
                 dtFim.Date = medicamento.DataFim ?? DateTime.Today;
 
                 await DisplayAlert("Edição", "Edite os dados e clique em salvar.", "OK");
@@ -138,7 +140,11 @@ public partial class MainPage : ContentPage
                 break;
         }
     }
-
+    private void OnContinuoCheckedChanged(object sender, CheckedChangedEventArgs e)
+    {
+        // Se for contínuo (true), IsVisible da data fim será false
+        dtFim.IsVisible = !e.Value;
+    }
     // Método para salvar o remédio (campos da tela)
     private async void AoClicarSalvar(object sender, EventArgs e)
     {
@@ -150,7 +156,7 @@ public partial class MainPage : ContentPage
         }
 
         // 2. VALIDAÇÃO DE DATA (Inserida aqui para travar o salvamento se estiver errado)10/05 (V)
-        if (dtFim.Date < dtInicio.Date)
+        if (!chkIsContinuo.IsChecked && dtFim.Date < dtInicio.Date)
         {
             await DisplayAlert("Data Inválida", "A data final não pode ser anterior à data de início.", "OK");
             return;
@@ -166,7 +172,8 @@ public partial class MainPage : ContentPage
                     Nome = entNome.Text,
                     Dosagem = entDose.Text,
                     DataInicio = dtInicio.Date,
-                    DataFim = dtFim.Date,
+                    // Se for contínuo, DataFim é null. Se não, pega o valor do DatePicker
+                    DataFim = chkIsContinuo.IsChecked ? null : dtFim.Date,
                     Ativo = 1,
                     IntervaloHoras = 0
                 };
@@ -211,6 +218,7 @@ public partial class MainPage : ContentPage
                 _medicamentoParaEdicao.Nome = entNome.Text;
                 _medicamentoParaEdicao.Dosagem = entDose.Text;
                 _medicamentoParaEdicao.DataInicio = dtInicio.Date;
+                _medicamentoParaEdicao.IsContinuo = chkIsContinuo.IsChecked;
                 _medicamentoParaEdicao.DataFim = dtFim.Date;
 
                 await App.Banco.UpdateMedicamento(_medicamentoParaEdicao);
@@ -219,11 +227,13 @@ public partial class MainPage : ContentPage
 
                 // Limpa modo edição
                 _medicamentoParaEdicao = null;
+
             }
 
             // Limpa campos
             entNome.Text = string.Empty;
             entDose.Text = string.Empty;
+            chkIsContinuo.IsChecked = false;
 
             CarregarMedicamentos();
         }

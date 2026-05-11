@@ -15,6 +15,7 @@ namespace AppLembreteMedicacao.Models
         public DateTime? DataFim { get; set; } // Mudou-se string para DataTime, o '?' permite que seja nulo (para remédios de uso contínuo) 07/04
         public int IntervaloHoras { get; set; } // Se o usuário digitar '8', o app avisará de 8 em 8 horas 07/04
         public int Ativo { get; set; } = 1;
+        public bool IsContinuo { get; set; } // Define se o remédio tem fim ou não, 11/05
 
         [Ignore]
         public List<Cronograma> Horarios { get; set; } = new(); // acrescentou-se new() 07/04
