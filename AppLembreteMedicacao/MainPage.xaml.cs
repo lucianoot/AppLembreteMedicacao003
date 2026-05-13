@@ -104,6 +104,31 @@ public partial class MainPage : ContentPage
                 break;
 
             case "Editar":
+                // 1. Ativa o modo de edição guardando o medicamento na variável global
+                _medicamentoParaEdicao = medicamento;
+
+                // 2. Preenche os campos da tela com os dados atuais do remédio
+                entNome.Text = medicamento.Nome;
+                entDose.Text = medicamento.Dosagem;
+                dtInicio.Date = medicamento.DataInicio;
+                dtFim.Date = medicamento.DataFim ?? DateTime.Today;
+                chkIsContinuo.IsChecked = medicamento.IsContinuo;
+
+                // 3. Modifica o botão de Salvar para indicar que é uma ATUALIZAÇÃO 13/05 (V)
+                btnSalvar.Text = "Atualizar Dados";
+                btnSalvar.BackgroundColor = Colors.Orange; // Muda para laranja para dar destaque
+
+                // 4. Avisa o usuário e foca no primeiro campo
+                await DisplayAlert("Modo Edição", "Altere os dados e clique em Atualizar Dados.", "OK");
+                entNome.Focus();
+                break;
+
+
+
+
+
+
+            /*case "Editar":
                 // Guarda o medicamento para edição
                 _medicamentoParaEdicao = medicamento;
 
@@ -115,7 +140,7 @@ public partial class MainPage : ContentPage
                 dtFim.Date = medicamento.DataFim ?? DateTime.Today;
 
                 await DisplayAlert("Edição", "Edite os dados e clique em salvar.", "OK");
-                break;
+                break;*/
 
             case "Remover":
                 bool confirmar = await DisplayAlert("Atenção", $"Deseja interromper o tratamento de {medicamento.Nome}?", "Sim", "Não");
@@ -230,11 +255,22 @@ public partial class MainPage : ContentPage
 
             }
 
-            // Limpa campos
+            // LIMPEZA E RESET 13/05 (V)
+
+            // 1. Limpa os campos de texto
             entNome.Text = string.Empty;
             entDose.Text = string.Empty;
-            chkIsContinuo.IsChecked = false;
 
+            // 2. Volta o texto do botão para "Salvar"
+            btnSalvar.Text = "Salvar Medicamento";
+
+            // 3. Volta a cor para o azul original do seu XAML
+            btnSalvar.BackgroundColor = Color.FromArgb("#0056b3");
+
+            // 4. Limpa a variável global para que o próximo clique seja um NOVO cadastro
+            _medicamentoParaEdicao = null;
+
+            // 5. Atualiza a lista na tela
             CarregarMedicamentos();
         }
         catch (Exception ex)
