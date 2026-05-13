@@ -172,6 +172,7 @@ public partial class MainPage : ContentPage
                     Nome = entNome.Text,
                     Dosagem = entDose.Text,
                     DataInicio = dtInicio.Date,
+                    IsContinuo = chkIsContinuo.IsChecked,
                     // Se for contínuo, DataFim é null. Se não, pega o valor do DatePicker
                     DataFim = chkIsContinuo.IsChecked ? null : dtFim.Date,
                     Ativo = 1,
