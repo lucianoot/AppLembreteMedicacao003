@@ -364,15 +364,23 @@ public partial class MainPage : ContentPage
     {
         try
         {
-            // 1. Busca os remédios ativos no banco de dados
-            var lista = await App.Banco.GetMedicamentosAtivos();
+            // Busca os remédios ativos no banco de dados
+            var listaDoBanco = await App.Banco.GetMedicamentosAtivos();
 
-            // 2. CORREÇÃO: Usa o nome exato que está no seu x:Name do XAML
-            listaMedicamentos.ItemsSource = lista;
+            // FILTRO LÓGICO:
+            // Exibe se for Uso Contínuo OU se a DataFim for hoje ou maior que hoje.
+            var listaFiltrada = listaDoBanco.Where(m =>
+                m.IsContinuo ||
+                (m.DataFim.HasValue && m.DataFim.Value.Date >= DateTime.Today)
+            ).ToList();
+
+            // Atualiza a interface (CollectionView/ListView)
+            listaMedicamentos.ItemsSource = listaFiltrada;
+
+            System.Diagnostics.Debug.WriteLine($"[TCC] Filtro aplicado: {listaFiltrada.Count} exibidos.");
         }
         catch (Exception ex)
         {
-            // Registra o erro caso algo dê errado na busca
             System.Diagnostics.Debug.WriteLine($"Erro ao carregar: {ex.Message}");
         }
     }

@@ -11,6 +11,9 @@ public partial class App : Application
 {
     public static SQLiteDatabaseHelper Banco { get; private set; }
 
+    // Variável de controle para evitar processamento duplo em cliques rápidos
+    private bool _estaProcessandoNotificacao = false;
+
     public App()
     {
         InitializeComponent();
@@ -21,96 +24,101 @@ public partial class App : Application
             Banco = new SQLiteDatabaseHelper(caminho);
         }
 
-        string email = Preferences.Get("usuarioLogado", "");
-        string tipoUsuario = Preferences.Get("TipoUsuario", "");
-
-        // Se já tem usuário logado
-        if (!string.IsNullOrEmpty(email))
-        {
-            switch (tipoUsuario)
-            {
-                case "Paciente":
-                    MainPage = new NavigationPage(new MainPage());
-                    break;
-
-                case "Médico":
-                case "Responsável":
-                    MainPage = new NavigationPage(new Monitoramento());
-                    break;
-
-                default:
-                    // Se não tiver tipo definido, manda pro login
-                    MainPage = new NavigationPage(new Login());
-                    break;
-            }
-        }
-        else
-        {
-            // Não está logado
-            MainPage = new NavigationPage(new Login());
-        }
-
+        DefinirPaginaInicial();
 
         // Escuta o clique na notificação
         LocalNotificationCenter.Current.NotificationActionTapped += OnNotificationTapped;
     }
 
+    private void DefinirPaginaInicial()
+    {
+        string email = Preferences.Get("usuarioLogado", "");
+        string tipoUsuario = Preferences.Get("TipoUsuario", "");
+
+        if (!string.IsNullOrEmpty(email))
+        {
+            MainPage = tipoUsuario switch
+            {
+                "Paciente" => new NavigationPage(new MainPage()),
+                "Médico" or "Responsável" => new NavigationPage(new Monitoramento()),
+                _ => new NavigationPage(new Login()),
+            };
+        }
+        else
+        {
+            MainPage = new NavigationPage(new Login());
+        }
+    }
+
     private void OnNotificationTapped(NotificationActionEventArgs e)
     {
-        int acao = e.ActionId;
-        string data = e.Request.ReturningData;
+        if (_estaProcessandoNotificacao) return;
+        _estaProcessandoNotificacao = true;
 
-        if (int.TryParse(data, out int idMed))
+        // Extração do ID do medicamento do ReturningData
+        string rawData = e.Request.ReturningData;
+        int idMed = 0;
+        if (!string.IsNullOrEmpty(rawData))
         {
-            MainThread.BeginInvokeOnMainThread(async () =>
-            {
-                try
-                {
-                    var lista = await App.Banco.GetMedicamentosAtivos();
-                    var med = lista.FirstOrDefault(m => m.Id == idMed);
+            // Se você usa "id=10", isso limpa o texto e pega só o número
+            string apenasNumeros = rawData.Replace("id=", "");
+            int.TryParse(apenasNumeros, out idMed);
+        }
 
+        MainThread.BeginInvokeOnMainThread(async () =>
+        {
+            try
+            {
+                // SEMPRE cancela a notificação para limpar a barra de status
+                LocalNotificationCenter.Current.Cancel(e.Request.NotificationId);
+
+                if (idMed <= 0) return;
+
+                // CASO 1: Usuário clicou em um dos botões (Tomar ou Pular)
+                if (e.ActionId == 100 || e.ActionId == 101)
+                {
+                    bool foiTomado = e.ActionId == 100;
+                    var med = await Banco.GetMedicamentoPorId(idMed);
                     string nomeMed = med?.Nome ?? "Medicamento";
 
-                    if (acao == 100 || acao == 101)// 100 = Tomado, 101 = Pular
+                    var registro = new HistoricoUso
                     {
-                        bool foiTomado = acao == 100;
-                        // 👉 REGISTRO NO HISTÓRICO
-                        var registro = new HistoricoUso
-                        {
-                            MedicamentoId = idMed,
-                            DataUso = DateTime.Now,
-                            Tomado = foiTomado,
-                            NomeMedicamento = nomeMed
-                        };
+                        MedicamentoId = idMed,
+                        DataUso = DateTime.Now,
+                        Tomado = foiTomado,
+                        NomeMedicamento = nomeMed
+                    };
 
-                        await App.Banco.InsertHistorico(registro);
+                    await Banco.InsertHistorico(registro);
+                    if (foiTomado) await Banco.AtualizarDoseParaTomado(idMed);
 
-                        // 👉 ATUALIZA A DOSE NO BANCO (Caso queira marcar a dose como concluída)
-                        if (foiTomado)
-                        {
-                            await App.Banco.AtualizarDoseParaTomado(idMed);
-                        }
-
-                        // USAR MainPage em vez de Shell.Current se não estiver usando Shell
-                        await Application.Current.MainPage.DisplayAlert(
-                            "Lembrete",
-                            $"{nomeMed} marcado como {(foiTomado ? "tomado ✅" : "pulado ⚠️")}.",
-                            "OK");
-                    }
-                    else
+                    await MainPage.DisplayAlert("Lembrete",
+                        $"{nomeMed} marcado como {(foiTomado ? "tomado ✅" : "pulado ⚠️")}.", "OK");
+                }
+                // CASO 2: Usuário clicou no corpo da notificação (ActionId padrão é 0 ou diferente de 100/101)
+                else
+                {
+                    if (MainPage is NavigationPage navPage)
                     {
-                        // Clique normal na notificação (abre a página de detalhes)
-                        if (MainPage is NavigationPage navPage)
+                        // Verifica se a página atual já não é a de confirmação para não abrir duplicado
+                        var paginaAtual = navPage.Navigation.NavigationStack.LastOrDefault();
+                        if (paginaAtual is not ConfirmacaoPage)
                         {
                             await navPage.PushAsync(new ConfirmacaoPage(idMed));
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Erro ao processar notificação: {ex.Message}");
-                }
-            });
-        }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[TCC] Erro ao processar: {ex.Message}");
+            }
+            finally
+            {
+                // Libera para o próximo clique após um pequeno delay de segurança
+                await Task.Delay(500);
+                _estaProcessandoNotificacao = false;
+            }
+        });
     }
 }
