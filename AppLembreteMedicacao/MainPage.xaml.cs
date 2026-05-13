@@ -342,13 +342,25 @@ public partial class MainPage : ContentPage
 
 
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
-        CarregarMedicamentos();
+
+        // 1. Busca o nome salvo no login/cadastro. 
+        // Se não houver nome, exibe "Usuário".
+        string nomeLogado = Preferences.Get("NomeUsuario", "Usuário");
+
+        // 2. Atualiza a Label de boas-vindas
+        if (lblBoasVindas != null)
+        {
+            lblBoasVindas.Text = $"Bem-vindo(a), {nomeLogado}!";
+        }
+
+        // 3. Carrega a lista de medicamentos do banco de dados de forma assíncrona
+        await CarregarMedicamentos();
     }
 
-    private async void CarregarMedicamentos()
+    private async Task CarregarMedicamentos()
     {
         try
         {

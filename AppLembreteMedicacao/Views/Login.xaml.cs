@@ -1,5 +1,6 @@
 using AppLembreteMedicacao.Models;
 using AppLembreteMedicacao.Views;
+
 namespace AppLembreteMedicacao.Views;
 
 public partial class Login : ContentPage
@@ -8,53 +9,53 @@ public partial class Login : ContentPage
     {
         InitializeComponent();
     }
+
     private async void OnLoginClicked(object sender, EventArgs e)
     {
-        // Validação de campos vazios
-        if (string.IsNullOrWhiteSpace(txtEmail.Text) ||
-            string.IsNullOrWhiteSpace(txtSenha.Text))
+        // 1. Validação de campos vazios
+        if (string.IsNullOrWhiteSpace(txtEmail.Text) || string.IsNullOrWhiteSpace(txtSenha.Text))
         {
-            await DisplayAlert("Erro", "Preencha todos os campos", "OK");
+            await DisplayAlert("Atenção", "Por favor, preencha o e-mail e a senha.", "OK");
             return;
         }
 
-        // Busca o usuário no banco
+        // 2. Busca o usuário no banco de dados SQLite
         var usuario = await App.Banco.GetUsuarioEmail(txtEmail.Text);
 
-        // Valida se o usuário existe e se a senha está correta
+        // 3. Validação de existência e senha
+        // Nota: Em um sistema real, aqui você usaria a comparação de Hash de senha
         if (usuario == null || usuario.SenhaHash != txtSenha.Text)
         {
-            await DisplayAlert("Erro", "Email ou senha inválidos", "OK");
+            await DisplayAlert("Erro", "E-mail ou senha incorretos.", "OK");
             return;
         }
 
-        // Salva os dados da sessão
+        // 4. PERSISTÊNCIA DE SESSÃO
+        // Salvamos o primeiro nome separado no cadastro para a saudação dinâmica
         Preferences.Set("usuarioLogado", usuario.Email);
         Preferences.Set("perfilUsuario", usuario.TipoPerfil);
         Preferences.Set("NomeUsuario", usuario.Nome);
 
-        await DisplayAlert("Sucesso", "Login realizado!", "OK");
-
-        // Redirecionamento por perfil 
+        // 5. REDIRECIONAMENTO POR PERFIL
         if (usuario.TipoPerfil == "Paciente")
         {
-            // Paciente vai gerenciar seus remédios
+            // Define a MainPage como a página inicial (reseta a pilha de navegação)
             Application.Current.MainPage = new NavigationPage(new MainPage());
         }
         else if (usuario.TipoPerfil == "Médico" || usuario.TipoPerfil == "Responsável")
         {
-            // Médico e Responsável vão para o monitoramento geral
+            // Navega para a tela de monitoramento
             await Navigation.PushAsync(new Monitoramento());
         }
         else
         {
-            // Caso o perfil seja diferente, abre a lista por padrão
+            // Fallback para garantir que o usuário não fique preso
             await Navigation.PushAsync(new ListaMedicacao());
         }
-    } 
+    }
 
     private async void OnCadastroClicked(object sender, EventArgs e)
     {
-         await Navigation.PushAsync(new CadastroUsuario());
+        await Navigation.PushAsync(new CadastroUsuario());
     }
 }

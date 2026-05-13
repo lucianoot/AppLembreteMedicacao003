@@ -15,6 +15,8 @@ namespace AppLembreteMedicacao.Models
         [NotNull]
         public string Nome { get; set; }
 
+        public string Sobrenome { get; set; }
+
         [NotNull, Unique]
         public string Email { get; set; }
        
