@@ -46,13 +46,22 @@ namespace AppLembreteMedicacao.Views
                 txtSobrenome.Text = "";
                 txtEmail.Text = "";
                 pickerPerfil.SelectedIndex = -1;
-                // IR PARA TELA DE MEDICAMENTO
-                await Navigation.PushAsync(new MainPage());
+                // Se for Médico ou Responsável, pula a MainPage e vai para o Monitoramento
+                if (usuario.TipoPerfil == "Médico" || usuario.TipoPerfil == "Responsável")
+                {
+                    await Navigation.PushAsync(new Monitoramento());
+                }
+                else
+                {
+                    // Se for Paciente, vai para a tela de cadastrar medicamentos
+                    await Navigation.PushAsync(new MainPage());
+                }
             }
             catch (Exception ex)
             {
                 await DisplayAlert("Erro", ex.Message, "OK");
             }
+        
 
         }
         // BOTÃO "JÁ SOU CADASTRADO"
