@@ -184,8 +184,8 @@ public partial class MainPage : ContentPage
                 // PEGA O ID REAL DO BANCO
                 var ultimo = await App.Banco.GetUltimoMedicamento();
 
-                // NOTIFICAÇÃO COM BOTÕES
-                var notifNovo = new NotificationRequest
+                // NOTIFICAÇÃO COM BOTÕES, removido para não gerar 2 notificações, manteremos a notificação de gerar ciclo.
+                /*var notifNovo = new NotificationRequest
                 {
                     NotificationId = ultimo.Id,
                     Title = "Hora do Remédio 💊",
@@ -208,7 +208,7 @@ public partial class MainPage : ContentPage
                 };
 
                 // 🔥 mostra a notificação
-                await LocalNotificationCenter.Current.Show(notifNovo);
+                await LocalNotificationCenter.Current.Show(notifNovo); */
 
                 // mensagem
                 await DisplayAlert("Sucesso", "Medicamento cadastrado!", "OK");
