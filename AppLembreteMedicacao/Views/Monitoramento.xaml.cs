@@ -66,8 +66,9 @@ public partial class Monitoramento : ContentPage
 
             if (paciente != null)
             {
-                // Garante que o nome do paciente apareça em caixa alta
-                lblNomePaciente.Text = paciente.Nome.ToUpper();
+                // Garante que o nome e sobrenome do paciente apareça em caixa alta
+                string nomeCompleto = $"{paciente.Nome} {paciente.Sobrenome}";
+                lblNomePaciente.Text = nomeCompleto.ToUpper();
             }
             else
             {
