@@ -16,7 +16,18 @@
 
     <Grid>
         <ScrollView>
+
             <VerticalStackLayout Padding="30" Spacing="15">
+
+
+                <!-- Mensagem de Boas-vindas Personalizada -->
+                <Label x:Name="lblBoasVindas"
+                Text="Bem-vindo!"
+                FontSize="20"
+                FontAttributes="Bold"
+                TextColor="#0056b3" 
+                HorizontalOptions="Start"
+                Margin="0,0,0,10" />
 
                 <Label Text="Cadastro de Remédio"
                        FontSize="24"
