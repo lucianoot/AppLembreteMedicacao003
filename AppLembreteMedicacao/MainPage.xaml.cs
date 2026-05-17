@@ -263,58 +263,79 @@ public partial class MainPage : ContentPage
 
     private async Task GerarCicloAutomatico(int medId, int intervalo)
     {
-        // 1. Busca o medicamento para saber o nome
-        var lista = await App.Banco.GetMedicamentosAtivos();
-        var medicamento = lista.FirstOrDefault(m => m.Id == medId);
-        if (medicamento == null) return;
-
-        medicamento.IntervaloHoras = intervalo;
-        await App.Banco.UpdateMedicamento(medicamento);
-
-        DateTime horaBase = DateTime.Now;
-        int repeticoes = 24 / intervalo;
-
-        List<Dose> listaDosesParaBanco = new List<Dose>();
-
-        for (int i = 0; i < repeticoes; i++)
+        try
         {
-            DateTime dataDose = horaBase.AddHours(i * intervalo);
+            // 1. Busca o medicamento para saber o nome e as configurações de data
+            var lista = await App.Banco.GetMedicamentosAtivos();
+            var medicamento = lista.FirstOrDefault(m => m.Id == medId);
+            if (medicamento == null) return;
 
-            // 2. Cria a dose para o banco (Status Pendente)
-            var novaDose = new Dose
-            {
-                MedicamentoId = medId,
-                NomeMedicamento = medicamento.Nome,
-                Status = "Pendente",
-                HorarioPrevisto = dataDose
-            };
-            listaDosesParaBanco.Add(novaDose);
+            medicamento.IntervaloHoras = intervalo;
+            await App.Banco.UpdateMedicamento(medicamento);
 
-            // 3. AGENDA A NOTIFICAÇÃO PARA CADA DOSE
-            var notif = new NotificationRequest
+            List<Dose> listaDosesParaBanco = new List<Dose>();
+
+            // 2. DETERMINA ATÉ QUE DIA VAMOS GERAR AS NOTIFICAÇÕES
+            // Se for contínuo, agendamos 30 dias. Se tiver DataFim, usamos a DataFim real (até o fim da noite, 23:59).
+            DateTime dataLimite = medicamento.IsContinuo
+                ? DateTime.Now.AddDays(30)
+                : (medicamento.DataFim?.Date.AddHours(23).AddMinutes(59) ?? DateTime.Now.AddDays(30));
+
+            DateTime horaDose = DateTime.Now;
+            int contadorId = 0;
+
+            // 3. O LAÇO VAI AVANÇANDO DE X EM X HORAS E AGENDANDO CADA NOTIFICAÇÃO INDIVIDUALMENTE
+            while (horaDose <= dataLimite)
             {
-                // O ID da notificação precisa ser ÚNICO. 
-                // Usamos o ID do med + o index para não sobrescrever
-                NotificationId = medId * 100 + i,
-                Title = "Hora do Remédio 💊",
-                Description = $"Tomar {medicamento.Nome}",
-                ReturningData = medId.ToString(), // Passa o ID do Medicamento para o banco atualizar
-                CategoryType = NotificationCategoryType.Status,
-                Schedule = new NotificationRequestSchedule
+                // Cria o registro da dose para o banco local (Tabela de históricos/cronograma)
+                var novaDose = new Dose
                 {
-                    NotifyTime = dataDose // Agenda para o horário futuro
-                },
-                Android = new AndroidOptions { LaunchAppWhenTapped = true }
-            };
+                    MedicamentoId = medId,
+                    NomeMedicamento = medicamento.Nome,
+                    Status = "Pendente",
+                    HorarioPrevisto = horaDose
+                };
+                listaDosesParaBanco.Add(novaDose);
 
-            await LocalNotificationCenter.Current.Show(notif);
+                // Cria a requisição de notificação para esta dose específica
+                var notif = new NotificationRequest
+                {
+                    // Garante um ID único combinando o ID do remédio com o número da dose
+                    NotificationId = (medId * 1000) + contadorId,
+                    Title = "Hora do Remédio 💊",
+                    Description = $"Tomar {medicamento.Nome} ({medicamento.Dosagem})",
+                    ReturningData = medId.ToString(),
+                    CategoryType = NotificationCategoryType.Status,
+                    Schedule = new NotificationRequestSchedule
+                    {
+                        NotifyTime = horaDose // Toca exatamente neste dia e hora calculados
+                    },
+                    Android = new AndroidOptions { LaunchAppWhenTapped = true }
+                };
+
+                // Envia para o agendador do celular
+                await LocalNotificationCenter.Current.Show(notif);
+
+                // Avança o relógio para o próximo horário (ex: se era 08:00 e o intervalo é 6h, vira 14:00)
+                horaDose = horaDose.AddHours(intervalo);
+                contadorId++;
+            }
+
+            // 4. Salva todas as doses geradas de uma vez só no banco SQLite
+            await App.Banco.InsertDoses(listaDosesParaBanco);
+
+            // Mensagem customizada para o usuário
+            string mensagemSucesso = medicamento.IsContinuo
+                ? $"Ciclo de {intervalo}h criado para os próximos 30 dias!"
+                : $"Ciclo de {intervalo}h criado com sucesso até {medicamento.DataFim:dd/MM/yyyy}!";
+
+            await DisplayAlert("Sucesso", mensagemSucesso, "OK");
+            CarregarMedicamentos();
         }
-
-        // 4. Salva todas as doses de uma vez no banco
-        await App.Banco.InsertDoses(listaDosesParaBanco);
-
-        await DisplayAlert("Sucesso", $"Ciclo de {intervalo}h criado e notificações agendadas!", "OK");
-        CarregarMedicamentos();
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro no Ciclo", "Não foi possível agendar o ciclo: " + ex.Message, "OK");
+        }
     }
 
     private async void AoClicarCronograma(object sender, EventArgs e)
