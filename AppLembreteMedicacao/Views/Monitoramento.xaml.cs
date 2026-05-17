@@ -7,9 +7,9 @@ public partial class Monitoramento : ContentPage
 {
 
 private int _medicamentoId = 0;
-
-// CONSTRUTOR VAZIO (Para o Médico/Responsável conseguir abrir a tela)
-public Monitoramento()
+    
+    // CONSTRUTOR VAZIO (Para o Médico/Responsável conseguir abrir a tela)
+    public Monitoramento()
 {
     InitializeComponent();
     // Construtor para quando você clica na lista
@@ -34,7 +34,7 @@ private void ConfigurarSaudacaoUsuario()
     {
         // Recupera os dados salvos no login
         string nomeLogado = Preferences.Get("NomeUsuario", "Usuário");
-        string perfil = Preferences.Get("perfilUsuario", "Usuário");
+        string perfil = Preferences.Get("TipoPerfil", "Usuário");
 
         if (perfil == "Médico")
         {
@@ -58,20 +58,21 @@ private void ConfigurarSaudacaoUsuario()
     {
         try
         {
-            // Busca o paciente diretamente no banco SQLite
+// Busca o paciente diretamente no banco SQLite
             var paciente = await App.Banco.GetPaciente();
 
             if (paciente != null)
             {
-                // Garante que o nome do paciente apareça em caixa alta
-                lblNomePaciente.Text = paciente.Nome.ToUpper();
+                //Concatena o Nome e o Sobrenome e transforma tudo em CAIXA ALTA
+                    string nomeCompleto = $"{paciente.Nome} {paciente.Sobrenome}".Trim();
+                lblNomePaciente.Text = nomeCompleto.ToUpper();
             }
             else
             {
                 lblNomePaciente.Text = "PACIENTE NÃO ENCONTRADO";
             }
 
-            List<HistoricoUso> listaBruta;
+           List<HistoricoUso> listaBruta;
 
             if (_medicamentoId == 0)
                 listaBruta = await App.Banco.GetTodosHistorico();

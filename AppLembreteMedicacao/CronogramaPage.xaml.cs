@@ -135,7 +135,7 @@ namespace AppLembreteMedicacao.Views
                 bool confirmar = await DisplayAlert("Confirmação", "Deseja excluir este horário de lembrete?", "Sim", "Não");
                 if (!confirmar) return;
 
-                // 3. esabilita o botão para evitar cliques duplos durante o processamento
+                // 3. desabilita o botão para evitar cliques duplos durante o processamento
                 button.IsEnabled = false;
                 // Remoção no Banco de Dados SQLite
                 await App.Banco.DeleteCronograma(id);

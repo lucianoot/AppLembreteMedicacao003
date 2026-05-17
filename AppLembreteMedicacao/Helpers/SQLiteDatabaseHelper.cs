@@ -168,6 +168,7 @@ namespace AppLembreteMedicacao.Helpers
             return usuario != null;
 
 
+
         }
     }
 }
