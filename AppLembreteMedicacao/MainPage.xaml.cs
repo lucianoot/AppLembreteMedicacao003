@@ -123,25 +123,6 @@ public partial class MainPage : ContentPage
                 entNome.Focus();
                 break;
 
-
-
-
-
-
-            /*case "Editar":
-                // Guarda o medicamento para edição
-                _medicamentoParaEdicao = medicamento;
-
-                // Preenche os campos da tela
-                entNome.Text = medicamento.Nome;
-                entDose.Text = medicamento.Dosagem;
-                dtInicio.Date = medicamento.DataInicio;
-                chkIsContinuo.IsChecked = medicamento.IsContinuo;
-                dtFim.Date = medicamento.DataFim ?? DateTime.Today;
-
-                await DisplayAlert("Edição", "Edite os dados e clique em salvar.", "OK");
-                break;*/
-
             case "Remover":
                 bool confirmar = await DisplayAlert("Atenção", $"Deseja interromper o tratamento de {medicamento.Nome}?", "Sim", "Não");
                 if (confirmar)
@@ -197,6 +178,7 @@ public partial class MainPage : ContentPage
                     Nome = entNome.Text,
                     Dosagem = entDose.Text,
                     DataInicio = dtInicio.Date,
+                    IsContinuo = chkIsContinuo.IsChecked,
                     // Se for contínuo, DataFim é null. Se não, pega o valor do DatePicker
                     DataFim = chkIsContinuo.IsChecked ? null : dtFim.Date,
                     Ativo = 1,
@@ -378,13 +360,24 @@ public partial class MainPage : ContentPage
 
 
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
-        CarregarMedicamentos();
+        // 1. Busca o nome salvo no login/cadastro. 
+        // Se não houver nome, exibe "Usuário".
+        string nomeLogado = Preferences.Get("NomeUsuario", "Usuário");
+
+        // 2. Atualiza a Label de boas-vindas
+        if (lblBoasVindas != null)
+        {
+            lblBoasVindas.Text = $"Bem-vindo(a), {nomeLogado}!";
+        }
+
+        // 3. Carrega a lista de medicamentos do banco de dados de forma assíncrona
+        await CarregarMedicamentos();
     }
 
-    private async void CarregarMedicamentos()
+    private async Task CarregarMedicamentos()
     {
         try
         {

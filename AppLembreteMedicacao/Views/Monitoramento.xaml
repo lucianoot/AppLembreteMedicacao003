@@ -10,6 +10,18 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="30" Spacing="15">
+            <Label x:Name="lblSaudacaoLogado"
+            FontSize="22"
+            FontAttributes="Bold"
+            TextColor="#2563EB"
+            HorizontalOptions="Center"
+            Margin="0,20" />
+
+
+            <Label x:Name="lblFraseApoio" 
+           FontSize="12" 
+           TextColor="#64748B" 
+           LineBreakMode="WordWrap" />
 
             <Label Text="RELATÓRIO DE ADESÃO"
            FontSize="14"

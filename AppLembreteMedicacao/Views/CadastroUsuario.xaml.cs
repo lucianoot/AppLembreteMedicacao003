@@ -4,6 +4,7 @@ namespace AppLembreteMedicacao.Views
 {
     public partial class CadastroUsuario : ContentPage
     {
+        
         public CadastroUsuario()
         {
             InitializeComponent();
@@ -12,6 +13,7 @@ namespace AppLembreteMedicacao.Views
         private async void OnSalvarClicked(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtNome.Text) ||
+                string.IsNullOrWhiteSpace(txtSobrenome.Text) ||
                 string.IsNullOrWhiteSpace(txtEmail.Text) ||
                 pickerPerfil.SelectedIndex == -1)
             {
@@ -30,6 +32,7 @@ namespace AppLembreteMedicacao.Views
             var usuario = new Usuario
             {
                 Nome = txtNome.Text,
+                Sobrenome = txtSobrenome.Text,
                 Email = txtEmail.Text,
                 SenhaHash = "123",
                 TipoPerfil = pickerPerfil.SelectedItem.ToString()
@@ -41,10 +44,19 @@ namespace AppLembreteMedicacao.Views
 
                 await DisplayAlert("Sucesso", "Usuário cadastrado!", "OK");
                 txtNome.Text = "";
+                txtSobrenome.Text = "";
                 txtEmail.Text = "";
                 pickerPerfil.SelectedIndex = -1;
-                // IR PARA TELA DE MEDICAMENTO
-                await Navigation.PushAsync(new MainPage());
+                // Se for Médico ou Responsável, pula a MainPage e vai para o Monitoramento
+                if (usuario.TipoPerfil == "Médico" || usuario.TipoPerfil == "Responsável")
+                {
+                    await Navigation.PushAsync(new Monitoramento());
+                }
+                else
+                {
+                    // Se for Paciente, vai para a tela de cadastrar medicamentos
+                    await Navigation.PushAsync(new MainPage());
+                }
             }
             catch (Exception ex)
             {

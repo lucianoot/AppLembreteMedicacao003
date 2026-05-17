@@ -24,29 +24,59 @@ protected override async void OnAppearing()
 {
     base.OnAppearing();
 
-    await CarregarHistorico();
-}
-private async Task CarregarHistorico()
-{
-    try
-    {
-        // 1. Busca o paciente diretamente
-        var paciente = await App.Banco.GetPaciente();
+        // 1. Lógica de Saudação para o Usuário Logado (Médico ou Responsável)
+        ConfigurarSaudacaoUsuario();
 
-        if (paciente != null)
+        // 2. Carrega os dados do Paciente e Histórico
+        await CarregarHistorico();
+    }
+private void ConfigurarSaudacaoUsuario()
+    {
+        // Recupera os dados salvos no login
+        string nomeLogado = Preferences.Get("NomeUsuario", "Usuário");
+        string perfil = Preferences.Get("perfilUsuario", "Usuário");
+
+        if (perfil == "Médico")
         {
-            lblNomePaciente.Text = paciente.Nome.ToUpper();
+            lblSaudacaoLogado.Text = $"Bem-vindo(a) {nomeLogado}!";
+            lblFraseApoio.Text = "Acompanhe aqui a evolução do tratamento do seu paciente.";
+        }
+        else if (perfil == "Responsável")
+        {
+            lblSaudacaoLogado.Text = $"Bem-vindo(a) {nomeLogado}!";
+            lblFraseApoio.Text = "Confira se os medicamentos foram administrados corretamente.";
         }
         else
         {
-            lblNomePaciente.Text = "PACIENTE NÃO ENCONTRADO";
+            lblSaudacaoLogado.Text = $"Bem-vindo(a) {nomeLogado}!";
+
         }
         List<HistoricoUso> listaBruta;
+    }
 
-        if (_medicamentoId == 0)
-            listaBruta = await App.Banco.GetTodosHistorico();
-        else
-            listaBruta = await App.Banco.GetHistorico(_medicamentoId);
+    private async Task CarregarHistorico()
+    {
+        try
+        {
+            // Busca o paciente diretamente no banco SQLite
+            var paciente = await App.Banco.GetPaciente();
+
+            if (paciente != null)
+            {
+                // Garante que o nome do paciente apareça em caixa alta
+                lblNomePaciente.Text = paciente.Nome.ToUpper();
+            }
+            else
+            {
+                lblNomePaciente.Text = "PACIENTE NÃO ENCONTRADO";
+            }
+
+            List<HistoricoUso> listaBruta;
+
+            if (_medicamentoId == 0)
+                listaBruta = await App.Banco.GetTodosHistorico();
+            else
+                listaBruta = await App.Banco.GetHistorico(_medicamentoId);
 
             // BUSCA A LISTA DE MEDICAMENTOS PARA SABER QUEM ESTÁ ATIVO
             var listaMedicamentos = await App.Banco.GetMedicamentos();
@@ -65,7 +95,7 @@ private async Task CarregarHistorico()
 
             listaHistorico.ItemsSource = listaFormatada;
                 var medicamentosAtuais = await App.Banco.GetMedicamentos();
-                // 2.Cálculo de Adesão por Medicamento(Cards de cima)
+                // 2.Cálculo de Adesão por Medicamento
                 var resumoAdesao = listaBruta
                 .GroupBy(h => h.NomeMedicamento)
                 .Select(g =>
