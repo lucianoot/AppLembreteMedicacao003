@@ -105,16 +105,7 @@
                         CornerRadius="10"
                         Margin="0,10" />
 
- <Button x:Name="btnCronograma"
-                        Text="Ver Último Cronograma"
-                        Clicked="AoClicarCronograma"
-                        IsVisible="False" 
-                        BackgroundColor="#5271ff"
-                        TextColor="White"
-                        CornerRadius="10"
-                        HeightRequest="50"
-                        FontAttributes="Bold"
-                        Margin="0,5,0,0"/>
+ 
 
                 <BoxView HeightRequest="1" Color="#E0E0E0" Margin="0,10"/>
 

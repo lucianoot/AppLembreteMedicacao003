@@ -20,10 +20,6 @@ public partial class MainPage : ContentPage
         // Registro dos botões da notificação
         ConfigurarCategoriasDeNotificacao();
 
-        // Zoom ao tocar no botão de cronograma
-        btnCronograma.Pressed += async (s, e) => await btnCronograma.ScaleTo(1.2, 100);
-        btnCronograma.Released += async (s, e) => await btnCronograma.ScaleTo(1, 100);
-
         //Data mínima
         dtInicio.MinimumDate = new DateTime(2000, 1, 1);
         // Impede selecionar uma data futura apenas para a Data Final (V)
@@ -335,19 +331,6 @@ public partial class MainPage : ContentPage
         catch (Exception ex)
         {
             await DisplayAlert("Erro no Ciclo", "Não foi possível agendar o ciclo: " + ex.Message, "OK");
-        }
-    }
-
-    private async void AoClicarCronograma(object sender, EventArgs e)
-    {
-        var ultimoRemedio = await App.Banco.GetUltimoMedicamento();
-        if (ultimoRemedio != null)
-        {
-            await Navigation.PushAsync(new CronogramaPage(ultimoRemedio.Id, ultimoRemedio.Nome));
-        }
-        else
-        {
-            await DisplayAlert("Atenção", "Cadastre um remédio primeiro.", "OK");
         }
     }
 
