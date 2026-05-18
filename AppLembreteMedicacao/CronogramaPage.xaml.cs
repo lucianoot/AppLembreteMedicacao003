@@ -55,7 +55,7 @@ namespace AppLembreteMedicacao.Views
 
             string frequencia = await DisplayPromptAsync(
                 "Frequência", "Ex: Diária, 8 em 8 horas, etc:",
-                initialValue: "diária", keyboard: Keyboard.Text);
+                initialValue: "Diária", keyboard: Keyboard.Text);
 
             if (string.IsNullOrWhiteSpace(frequencia)) return;
 
@@ -147,8 +147,7 @@ namespace AppLembreteMedicacao.Views
                 // 6. Atualiza a lista na tela
                 await CarregarCronogramas();
 
-                // Feedback de sucesso (Opcional, mas melhora a UX)
-                // await DisplayAlert("Sucesso", "Horário removido com sucesso.", "OK");
+                 await DisplayAlert("Sucesso", "Horário removido com sucesso.", "OK");
             }
             catch (Exception ex)
             {
