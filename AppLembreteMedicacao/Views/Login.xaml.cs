@@ -30,7 +30,7 @@ public partial class Login : ContentPage
 
         // Salva os dados da sessão
         Preferences.Set("usuarioLogado", usuario.Email);
-        Preferences.Set("perfilUsuario", usuario.TipoPerfil);
+        Preferences.Set("TipoUsuario", usuario.TipoPerfil); 
         Preferences.Set("NomeUsuario", usuario.Nome);
 
         await DisplayAlert("Sucesso", "Login realizado!", "OK");

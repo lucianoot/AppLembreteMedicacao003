@@ -60,7 +60,7 @@ public partial class ListaMedicacao : ContentPage
 
     private async void OnNovaMedicacaoClicked(object sender, EventArgs e)
     {
-        await Navigation.PushAsync(new Novomedicacao());
+        await Navigation.PushAsync(new MainPage());
     }
     private async void OnSairClicked(object sender, EventArgs e)
     {
