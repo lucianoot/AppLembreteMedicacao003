@@ -41,8 +41,7 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#FFFFFF"
-           BaseSize="512,512"/>
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#FFFFFF" BaseSize="512,512" />
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#FFFFFF" BaseSize="128,128" />
@@ -72,9 +71,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="CronogramaPage.xaml.cs">
-	    <DependentUpon>CronogramaPage.xaml</DependentUpon>
-	  </Compile>
 	  <Compile Update="AdicionarHorarioPage.xaml.cs">
 	    <DependentUpon>AdicionarHorarioPage.xaml</DependentUpon>
 	  </Compile>
@@ -87,9 +83,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="CronogramaPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
 	  <MauiXaml Update="AdicionarHorarioPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

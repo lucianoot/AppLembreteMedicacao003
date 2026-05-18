@@ -78,15 +78,10 @@ public partial class MainPage : ContentPage
 
         // Abre o menu de opções nativo
         string acao = await DisplayActionSheet($"Opções para: {medicamento.Nome}",
-            "Cancelar", "Remover", "Editar", "Ver Horários", "Gerar Ciclo 6h/6h", "Gerar Ciclo 8h/8h", "Gerar Ciclo 12h/12h", "Gerar Ciclo 24h/24h");
+            "Cancelar", "Remover", "Editar", "Gerar Ciclo 6h/6h", "Gerar Ciclo 8h/8h", "Gerar Ciclo 12h/12h", "Gerar Ciclo 24h/24h");
 
         switch (acao)
         {
-            case "Ver Horários":
-                // Agora passando o ID e o Nome
-                await Navigation.PushAsync(new CronogramaPage(medicamento.Id, medicamento.Nome));
-                break;
-
             case "Gerar Ciclo 6h/6h":
                 await GerarCicloAutomatico(medicamento.Id, 6);
                 break;
