@@ -21,10 +21,11 @@
 		<Nullable>enable</Nullable>
 
 		<!-- Display name -->
-		<ApplicationTitle>AppLembreteMedicacao</ApplicationTitle>
+		<ApplicationTitle>Meu Remédio</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.applembretemedicacao</ApplicationId>
+		
+	    <ApplicationId>com.meuremedio.app</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
