@@ -118,18 +118,11 @@ public partial class MainPage : ContentPage
                 bool confirmar = await DisplayAlert("Atenção", $"Deseja interromper o tratamento de {medicamento.Nome}?", "Sim", "Não");
                 if (confirmar)
                 {
-                    // 1. ANTES DE DESATIVAR, busca os cronogramas manuais deste medicamento
-                    var cronogramasManuais = await App.Banco.GetCronogramaPorMedicamento(medicamento.Id);
-                    foreach (var crono in cronogramasManuais)
-                    {
-                        // Cancela cada alarme diário criado na CronogramaPage
-                        LocalNotificationCenter.Current.Cancel(crono.Id);
-                    }
-
-                    // 2. Desativa o medicamento no banco
+                  
+                    // Desativa o medicamento no banco
                     await App.Banco.DesativarMedicamento(medicamento);
 
-                    // 3. Cancela as notificações de Ciclos Automáticos (Mantenha a correção anterior)
+                    // Cancela as notificações de Ciclos Automáticos (Mantenha a correção anterior)
                     for (int i = 0; i < 150; i++)
                     {
                         LocalNotificationCenter.Current.Cancel((medicamento.Id * 1000) + i);
