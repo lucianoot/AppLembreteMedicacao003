@@ -1,10 +1,8 @@
 ﻿using AppLembreteMedicacao.Helpers;
 using AppLembreteMedicacao.Models;
 using AppLembreteMedicacao.Views;
-using Microsoft.Maui.Storage;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
-using System;
 
 
 namespace AppLembreteMedicacao;
@@ -25,8 +23,6 @@ public partial class MainPage : ContentPage
         // Impede selecionar uma data futura apenas para a Data Final (V)
         dtFim.MaximumDate = new DateTime(2100, 12, 31);
     }
-
-
     
     private async void OnVerHistoricoClicked(object sender, EventArgs e)
     {
@@ -335,6 +331,9 @@ public partial class MainPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+
+        await DisplayAlert("⚠️ Importante", "Os dados e lembretes gerados por este aplicativo são informativos. O monitoramento digital é um aliado ao tratamento, mas não anula a necessidade de consultas médicas periódicas e supervisão profissional.", "Entendi");
+
         // 1. Busca o nome salvo no login/cadastro. 
         // Se não houver nome, exibe "Usuário".
         string nomeLogado = Preferences.Get("NomeUsuario", "Usuário");
