@@ -179,32 +179,7 @@ public partial class MainPage : ContentPage
                 // PEGA O ID REAL DO BANCO
                 var ultimo = await App.Banco.GetUltimoMedicamento();
 
-                // NOTIFICAÇÃO COM BOTÕES, removido para não gerar 2 notificações, manteremos a notificação de gerar ciclo.
-                /*var notifNovo = new NotificationRequest
-                {
-                    NotificationId = ultimo.Id,
-                    Title = "Hora do Remédio 💊",
-                    Description = $"Tomar {novo.Nome}",
-
-                    ReturningData = ultimo.Id.ToString(),
-                    // Vincula aos botões configurados no construtor
-                    CategoryType = NotificationCategoryType.Status,
-
-                    Schedule = new NotificationRequestSchedule
-                    {
-                        NotifyTime = DateTime.Now.AddSeconds(5)
-                    },
-
-                    Android = new AndroidOptions
-                    {
-
-                        LaunchAppWhenTapped = true
-                    }
-                };
-
-                // 🔥 mostra a notificação
-                await LocalNotificationCenter.Current.Show(notifNovo);*/
-
+                
                 // mensagem
                 await DisplayAlert("Sucesso", "Medicamento cadastrado!", "OK");
             }
@@ -419,6 +394,7 @@ public partial class MainPage : ContentPage
 
             string hashSeguro = SecurityHelper.GerarHash(corpo);
             string textoFinal = cabecalho + corpo + $"\nHash de Segurança: {hashSeguro}\n\n" +
+                                                    $"Nota: O código acima é uma assinatura digital gerada pelo aplicativo para garantir a integridade e a origem autêntica deste prontuário.\n" +
                                                     $"Gerado pelo App Meu Remédio.";
 
             await Share.Default.RequestAsync(new ShareTextRequest
