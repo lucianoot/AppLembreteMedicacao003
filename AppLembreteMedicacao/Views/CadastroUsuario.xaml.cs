@@ -4,7 +4,7 @@ namespace AppLembreteMedicacao.Views
 {
     public partial class CadastroUsuario : ContentPage
     {
-        
+
         public CadastroUsuario()
         {
             InitializeComponent();
@@ -36,36 +36,45 @@ namespace AppLembreteMedicacao.Views
                 Email = txtEmail.Text,
                 SenhaHash = "123",
                 TipoPerfil = pickerPerfil.SelectedItem.ToString()
-
             };
+
             try
             {
+                // 1. Grava no Banco SQLite
                 await App.Banco.InsertUsuario(usuario);
 
-                await DisplayAlert("Sucesso", "Usuário cadastrado!", "OK");
+                // 2. CORREÇÃO Salva imediatamente na sessão local do aparelho
+                // Usamos as chaves exatas que o Monitoramento e a MainPage tentam ler
+                Preferences.Set("usuarioLogado", usuario.Email);
+                Preferences.Set("NomeUsuario", usuario.Nome);
+                Preferences.Set("TipoPerfil", usuario.TipoPerfil);
+
+                await DisplayAlert("Sucesso", "Usuário cadastrado com sucesso!", "OK");
+
+                // 3. Limpa os campos da tela
                 txtNome.Text = "";
                 txtSobrenome.Text = "";
                 txtEmail.Text = "";
                 pickerPerfil.SelectedIndex = -1;
-                // Se for Médico ou Responsável, pula a MainPage e vai para o Monitoramento
+
+                // 4. Redirecionamento correto resetando a MainPage da aplicação para evitar rastros de navegação anterior
                 if (usuario.TipoPerfil == "Médico" || usuario.TipoPerfil == "Responsável")
                 {
-                    await Navigation.PushAsync(new Monitoramento());
+                    Application.Current.MainPage = new NavigationPage(new Monitoramento());
                 }
                 else
                 {
-                    // Se for Paciente, vai para a tela de cadastrar medicamentos
-                    await Navigation.PushAsync(new MainPage());
+                    Application.Current.MainPage = new NavigationPage(new MainPage());
                 }
             }
             catch (Exception ex)
             {
                 await DisplayAlert("Erro", ex.Message, "OK");
             }
-
         }
-        // BOTÃO "JÁ SOU CADASTRADO"
-        private async void OnLoginClicked(object sender, EventArgs e)
+
+        // BOTÃO "JÁ SOU CADASTRADO" - Alterado para public para o XAML encontrar
+        public async void OnLoginClicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new Login());
         }

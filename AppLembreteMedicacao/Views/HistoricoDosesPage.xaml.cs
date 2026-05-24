@@ -5,8 +5,8 @@ namespace AppLembreteMedicacao.Views
 {
     public partial class HistoricoDosesPage : ContentPage
     {
-        // Criamos a coleção que será ligada à CollectionView do XAML
-        public ObservableCollection<HistoricoDose> Lista { get; set; } = new ObservableCollection<HistoricoDose>();
+        // CORREÇÃO: Mudamos de HistoricoDose para HistoricoUso
+        public ObservableCollection<HistoricoUso> Lista { get; set; } = new ObservableCollection<HistoricoUso>();
 
         public HistoricoDosesPage()
         {
@@ -15,7 +15,6 @@ namespace AppLembreteMedicacao.Views
             // Vinculamos a lista do C# com o x:Name="listaHistorico" do seu XAML
             listaHistorico.ItemsSource = Lista;
         }
-
 
         // Atualiza os dados toda vez que a tela for aberta
         protected override async void OnAppearing()
@@ -28,13 +27,14 @@ namespace AppLembreteMedicacao.Views
         {
             try
             {
-                // Busca os dados do banco usando o Helper e converte para o modelo de exibição
+                // Busca os dados atualizados do banco usando a classe HistoricoUso
                 var dados = await App.Banco.GetHistoricoParaExibicao();
 
                 // Limpa a lista atual e preenche com os novos dados
                 Lista.Clear();
                 foreach (var item in dados)
                 {
+                    // Agora o item adicionado é do tipo HistoricoUso
                     Lista.Add(item);
                 }
             }
@@ -44,6 +44,5 @@ namespace AppLembreteMedicacao.Views
                 await DisplayAlert("Erro", "Não foi possível carregar o histórico: " + ex.Message, "OK");
             }
         }
-
     }
 }
