@@ -377,23 +377,41 @@ public partial class MainPage : ContentPage
                 return;
             }
 
+            // Alerta de privacidade
+            bool desejaCompartilhar = await DisplayAlert(
+                "⚠️ Aviso de Privacidade",
+                "O prontuário contém dados sensíveis sobre a sua saúde e histórico de medicações. Deseja realmente prosseguir com o compartilhamento?",
+                "Sim, compartilhar",
+                "Cancelar");
+
+            // SEGURANÇA REFORÇADA: Se NÃO for explicitamente TRUE (ou seja, se for false ou nulo), interrompe na hora.
+            if (desejaCompartilhar == false)
+            {
+                return;
+            }
+
             string cabecalho = $"📋 MEU PRONTUÁRIO - {DateTime.Now:dd/MM/yyyy}\n";
             cabecalho += "------------------------------------------\n\n";
             string corpo = "";
 
             foreach (var m in lista)
             {
-                string status = m.Ativo == 1 ? "✅ Ativo" : "❌ Inativo";
+                string status = m.Ativo == 1 ? "✅ Registrado" : "❌ Inativo";
+                string DataFim = "";
+                if (!desejaCompartilhar) return;
+
+
                 corpo += $"💊 Remédio: {m.Nome}\n   " +
                          $"Dose: {m.Dosagem}\n   " +
                          $"Início: {m.DataInicio:dd/MM/yyyy}\n   " +
-                         $"Status: {status}\n";
+                         $"Término: {m.DataFim:dd/MM/yyyy}\n   " +
+                         $"Status: {status}\n"; 
                 corpo += "------------------------------------------\n";
             }
 
             string hashSeguro = SecurityHelper.GerarHash(corpo);
             string textoFinal = cabecalho + corpo + $"\nHash de Segurança: {hashSeguro}\n\n" +
-                                                    $"Nota: O código acima é uma assinatura digital gerada pelo aplicativo para garantir a integridade e a origem autêntica deste prontuário.\n" +
+                                                    $"Nota: O código acima é uma assinatura digital gerada pelo aplicativo para garantir a integridade e a origem autêntica deste prontuário.\n\n" +
                                                     $"Gerado pelo App Meu Remédio.";
 
             await Share.Default.RequestAsync(new ShareTextRequest
