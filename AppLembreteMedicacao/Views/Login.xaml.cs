@@ -1,5 +1,4 @@
-using AppLembreteMedicacao.Models;
-using AppLembreteMedicacao.Views;
+using AppLembreteMedicacao.Helpers;
 namespace AppLembreteMedicacao.Views;
 
 public partial class Login : ContentPage
@@ -21,8 +20,11 @@ public partial class Login : ContentPage
         // Busca o usuário no banco
         var usuario = await App.Banco.GetUsuarioEmail(txtEmail.Text);
 
-        // Valida se o usuário existe e se a senha está correta
-        if (usuario == null || usuario.SenhaHash != txtSenha.Text)
+        // Transforma a senha que o usuário DIGITOU na tela em um Hash criptográfico 24/05/26 (V)
+        string senhaDigitadaHash = SecurityHelper.GerarHash(txtSenha.Text);
+
+        //  Compara Hash com Hash (Segurança Real)
+        if (usuario == null || usuario.SenhaHash != senhaDigitadaHash)
         {
             await DisplayAlert("Erro", "Email ou senha inválidos", "OK");
             return;
