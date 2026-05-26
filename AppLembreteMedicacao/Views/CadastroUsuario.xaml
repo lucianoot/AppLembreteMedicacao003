@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="AppLembreteMedicacao.Views.CadastroUsuario"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AppLembreteMedicacao.Views.CadastroUsuario"
              Title="CadastroUsuario"
-              BackgroundColor="White">
+             BackgroundColor="White">
 
     <ScrollView>
         <VerticalStackLayout Padding="30" Spacing="18" VerticalOptions="Start">
-            <!--Título -->
 
             <Label Text="Criar Conta"
                    FontSize="28"
@@ -15,7 +14,6 @@
                    TextColor="#2563EB"
                    HorizontalOptions="Center"/>
 
-            <!-- Campo Nome -->
             <Border StrokeShape="RoundRectangle 12" Stroke="#E2E8F0" Padding="15,0" BackgroundColor="#F8FAFC">
                 <Entry x:Name="txtNome"
                        Placeholder="Primeiro Nome"
@@ -24,7 +22,6 @@
                        HeightRequest="55" />
             </Border>
 
-            <!-- Campo Sobrenome -->
             <Border StrokeShape="RoundRectangle 12" Stroke="#E2E8F0" Padding="15,0" BackgroundColor="#F8FAFC">
                 <Entry x:Name="txtSobrenome"
                        Placeholder="Sobrenome"
@@ -33,7 +30,6 @@
                        HeightRequest="55" />
             </Border>
 
-            <!-- Email -->
             <Border StrokeShape="RoundRectangle 12" Stroke="#E2E8F0" Padding="15,0" BackgroundColor="#F8FAFC">
                 <Entry x:Name="txtEmail"
                        Placeholder="E-mail"
@@ -42,8 +38,7 @@
                        PlaceholderColor="#94A3B8"
                        HeightRequest="55" />
             </Border>
-            
-            <!-- Senha -->
+
             <Border StrokeShape="RoundRectangle 12" Stroke="#E2E8F0" Padding="15,0" BackgroundColor="#F8FAFC">
                 <Entry x:Name="txtSenha"
                        Placeholder="Crie uma senha"
@@ -53,7 +48,6 @@
                        HeightRequest="55" />
             </Border>
 
-            <!-- Perfil (Tipo de Usuário) -->
             <Label Text="Selecione seu Perfil:" TextColor="#64748B" Margin="5,5,0,0" FontSize="14" />
             <Border StrokeShape="RoundRectangle 12" Stroke="#E2E8F0" Padding="15,0" BackgroundColor="#F8FAFC">
                 <Picker x:Name="pickerPerfil"
@@ -69,7 +63,6 @@
                 </Picker>
             </Border>
 
-            <!-- Botão Salvar -->
             <Button Text="Finalizar Cadastro"
                     Clicked="OnSalvarClicked"
                     BackgroundColor="#2563EB"
@@ -83,9 +76,8 @@
                 </Button.Shadow>
             </Button>
 
-            <!-- Já tem conta -->
             <Button Text="Já sou cadastrado"
-        Clicked="OnLoginClicked"
+                    Clicked="OnLoginClicked"
                     BackgroundColor="Transparent"
                     TextColor="#2563EB"
                     FontSize="15"
