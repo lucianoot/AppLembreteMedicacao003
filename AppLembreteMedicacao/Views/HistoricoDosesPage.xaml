@@ -50,25 +50,36 @@
                             </VerticalStackLayout>
 
                             <Frame Grid.Row="0"
-                                   Grid.Column="1"
-                                   Padding="10,5"
-                                   CornerRadius="8"
-                                   BackgroundColor="{Binding StatusColor}"
-                                   HasShadow="False"
-                                   VerticalOptions="Center">
-                                <Label Text="{Binding Status}"
-                                       FontSize="12"
-                                       FontAttributes="Bold"
-                                       TextColor="White" />
-                            </Frame>
+       Grid.Column="1"
+       Padding="10,5"
+       CornerRadius="8"
+       BackgroundColor="{Binding StatusColor}"
+       HasShadow="False"
+       VerticalOptions="Center">
 
+                                <Label FontSize="12"
+           FontAttributes="Bold"
+           TextColor="White">
+
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding Tomado}" Value="True">
+                                            <Setter Property="Text" Value="Tomou" />
+                                        </DataTrigger>
+
+                                        <DataTrigger TargetType="Label" Binding="{Binding Tomado}" Value="False">
+                                            <Setter Property="Text" Value="Pendente" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+
+                                </Label>
+                            </Frame>
 
                             <VerticalStackLayout Grid.Row="1"
                                                  Grid.Column="0"
-                                                 Grid.ColumnSpan="2"
+                                                 Grid.ColumnSpan="3"
                                                  Margin="0,12,0,0">
                                 <Label Text="Data e Hora" FontSize="11" TextColor="Gray" />
-                                <Label Text="{Binding DataHora, StringFormat='🕒 {0:dd/MM/yyyy HH:mm}'}"
+                                <Label Text="{Binding DataUso, StringFormat='{}{0:dd/MM/yyyy HH:mm}'}"
                                        FontSize="15"
                                        FontAttributes="Italic"
                                        TextColor="#0056b3" />

@@ -43,7 +43,6 @@ public partial class MainPage : ContentPage
             ActionList = acoes
         };
 
-        // coloquei como comentário o erro LocalNotificationCenter.Current.RegisterCategory(categoria);
     }
     private async void AoClicarSair(object sender, EventArgs e)
     {
@@ -118,7 +117,7 @@ public partial class MainPage : ContentPage
                     // Desativa o medicamento no banco
                     await App.Banco.DesativarMedicamento(medicamento);
 
-                    // Cancela as notificações de Ciclos Automáticos (Mantenha a correção anterior)
+                    // Cancela as notificações de Ciclos Automáticos 
                     for (int i = 0; i < 150; i++)
                     {
                         LocalNotificationCenter.Current.Cancel((medicamento.Id * 1000) + i);
@@ -146,7 +145,7 @@ public partial class MainPage : ContentPage
             return;
         }
 
-        // 2. VALIDAÇÃO DE DATA (Inserida aqui para travar o salvamento se estiver errado)10/05 (V)
+        // VALIDAÇÃO DE DATA (Inserida aqui para travar o salvamento se estiver errado)10/05 (V)
         if (!chkIsContinuo.IsChecked && dtFim.Date < dtInicio.Date)
         {
             await DisplayAlert("Data Inválida", "A data final não pode ser anterior à data de início.", "OK");
@@ -157,7 +156,7 @@ public partial class MainPage : ContentPage
         {
             if (_medicamentoParaEdicao == null)
             {
-                // ✅ NOVO
+                // NOVO
                 var novo = new Medicamento
                 {
                     Nome = entNome.Text,
@@ -175,13 +174,11 @@ public partial class MainPage : ContentPage
                 // PEGA O ID REAL DO BANCO
                 var ultimo = await App.Banco.GetUltimoMedicamento();
 
-                
-                // mensagem
                 await DisplayAlert("Sucesso", "Medicamento cadastrado!", "OK");
             }
             else
             {
-                // ✏️ EDITAR
+                // EDITAR
                 _medicamentoParaEdicao.Nome = entNome.Text;
                 _medicamentoParaEdicao.Dosagem = entDose.Text;
                 _medicamentoParaEdicao.DataInicio = dtInicio.Date;
@@ -273,7 +270,6 @@ public partial class MainPage : ContentPage
                     Android = new AndroidOptions { LaunchAppWhenTapped = true }
                 };
 
-                // Envia para o agendador do celular
                 await LocalNotificationCenter.Current.Show(notif);
 
                 // Avança o relógio para o próximo horário (ex: se era 08:00 e o intervalo é 6h, vira 14:00)
@@ -322,13 +318,9 @@ public partial class MainPage : ContentPage
 
     private async void AoClicarVerHistorico(object sender, EventArgs e)
     {
-        // Apenas navega para a página de histórico que você criou
         await Navigation.PushAsync(new HistoricoDosesPage());
     }
-
-
-
-    protected override async void OnAppearing()
+protected override async void OnAppearing()
     {
         base.OnAppearing();
 
