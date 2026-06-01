@@ -353,17 +353,23 @@ private async Task CarregarMedicamentos()
 {
 try
 {
-// 1. Busca os remédios ativos no banco de dados
-var lista = await App.Banco.GetMedicamentosAtivos();
+// 1. Busca os remédios ativos cadastrados no banco de dados
+var listaCompleta = await App.Banco.GetMedicamentosAtivos();
 
-// 2. CORREÇÃO: Usa o nome exato que está no seu x:Name do XAML
-listaMedicamentos.ItemsSource = lista;
+// 2. Pega a data de hoje (meia-noite) para ignorar os minutos na comparação
+DateTime hoje = DateTime.Today;
+
+// 3. FILTRO: Mantém apenas os remédios que são de uso contínuo OR que a DataFim ainda não passou de hoje
+var listaFiltrada = listaCompleta.Where(m => m.IsContinuo || (m.DataFim != null && m.DataFim.Value.Date >= hoje)).ToList();
+
+// 4. Alimenta a sua CollectionView apenas com os medicamentos válidos
+listaMedicamentos.ItemsSource = listaFiltrada;
 }
 catch (Exception ex)
 {
 // Registra o erro caso algo dê errado na busca
 System.Diagnostics.Debug.WriteLine($"Erro ao carregar: {ex.Message}");
-}
+        }
 }
 
 private async void ToolbarItem_Clicked(object sender, EventArgs e)
