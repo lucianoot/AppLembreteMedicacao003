@@ -4,70 +4,70 @@ namespace AppLembreteMedicacao.Views;
 
 public partial class ListaMedicacao : ContentPage
 {
-    public ListaMedicacao()
-	{
-		InitializeComponent();
-    }
-    // Recarrega a lista sempre que a tela aparece
-    protected override async void OnAppearing()
-    {
-        base.OnAppearing();
-        try
-        {
-            var lista = await App.Banco.GetMedicamentosAtivos();
-            listaMedicamentos.ItemsSource = lista;
-        }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Erro", "Erro ao carregar banco: " + ex.Message, "OK");
-        }
-    }
+public ListaMedicacao()
+{
+InitializeComponent();
+}
+// Recarrega a lista sempre que a tela aparece
+protected override async void OnAppearing()
+{
+base.OnAppearing();
+try
+{
+    var lista = await App.Banco.GetMedicamentosAtivos();
+    listaMedicamentos.ItemsSource = lista;
+}
+catch (Exception ex)
+{
+    await DisplayAlert("Erro", "Erro ao carregar banco: " + ex.Message, "OK");
+}
+}
 
-    // Lógica do Botão TOMAR 
-    private async void OnTomarClicked(object sender, EventArgs e)
-    {
-        var btn = sender as Button;
-        var med = btn?.CommandParameter as Medicamento;
+// Lógica do Botão TOMAR 
+private async void OnTomarClicked(object sender, EventArgs e)
+{
+var btn = sender as Button;
+var med = btn?.CommandParameter as Medicamento;
 
-        if (med != null)
-        {
+if (med != null)
+{
             
-            var historico = new HistoricoUso
-            {
-                MedicamentoId = med.Id, 
-                NomeMedicamento = med.Nome,
-                DataUso = DateTime.Now,
-                Tomado = true
-            };
-
-            // Salva na tabela de histórico
-            await App.Banco.SalvarHistorico(historico);
-
-            await DisplayAlert("Sucesso", $"{med.Nome} marcado como tomado!", "OK");
-        }
-    }
-
-    private async void OnVerHistoricoClicked(object sender, EventArgs e)
+    var historico = new HistoricoUso
     {
-        var btn = sender as Button;
-        var med = btn?.CommandParameter as Medicamento;
+        MedicamentoId = med.Id, 
+        NomeMedicamento = med.Nome,
+        DataUso = DateTime.Now,
+        Tomado = true
+    };
 
-        if (med != null)
-        {
-            await Navigation.PushAsync(new Monitoramento(med.Id));
-        }
-    }
+    // Salva na tabela de histórico
+    await App.Banco.SalvarHistorico(historico);
 
-    private async void OnNovaMedicacaoClicked(object sender, EventArgs e)
-    {
-        await Navigation.PushAsync(new MainPage());
-    }
-    private async void OnSairClicked(object sender, EventArgs e)
-    {
-        bool confirm = await DisplayAlert("Logout", "Deseja realmente sair?", "Sim", "Não");
-        if (confirm)
-        {
-            Application.Current.MainPage = new NavigationPage(new Login());
-        }
-    }
+    await DisplayAlert("Sucesso", $"{med.Nome} marcado como tomado!", "OK");
+}
+}
+
+private async void OnVerHistoricoClicked(object sender, EventArgs e)
+{
+var btn = sender as Button;
+var med = btn?.CommandParameter as Medicamento;
+
+if (med != null)
+{
+    await Navigation.PushAsync(new Monitoramento(med.Id));
+}
+}
+
+private async void OnNovaMedicacaoClicked(object sender, EventArgs e)
+{
+await Navigation.PushAsync(new MainPage());
+}
+private async void OnSairClicked(object sender, EventArgs e)
+{
+bool confirm = await DisplayAlert("Logout", "Deseja realmente sair?", "Sim", "Não");
+if (confirm)
+{
+    Application.Current.MainPage = new NavigationPage(new Login());
+}
+}
 }

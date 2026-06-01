@@ -1,88 +1,84 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="AppLembreteMedicacao.Views.HistoricoDosesPage" 
-             Title="Histórico de Doses"
-             BackgroundColor="White">
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            x:Class="AppLembreteMedicacao.Views.HistoricoDosesPage" 
+            Title="Histórico de Doses"
+            BackgroundColor="White">
 
     <Grid RowDefinitions="Auto, Auto, Auto, *" Padding="30,20,30,0">
 
         <Label Grid.Row="0"
-               Text="Histórico de Doses"
-               FontSize="24"
-               HorizontalOptions="Center"
-               FontAttributes="Bold"
-               TextColor="#0056b3" />
+        Text="Histórico de Doses"
+        FontSize="24"
+        HorizontalOptions="Center"
+        FontAttributes="Bold"
+        TextColor="#0056b3" />
 
         <Label Grid.Row="1"
-               Text="Acompanhe o registro das medicações"
-               FontSize="14"
-               HorizontalOptions="Center"
-               TextColor="Gray"
-               Margin="0,5,0,10" />
+        Text="Acompanhe o registro das medicações"
+        FontSize="14"
+        HorizontalOptions="Center"
+        TextColor="Gray"
+        Margin="0,5,0,10" />
 
         <BoxView Grid.Row="2"
-                 HeightRequest="1"
-                 Color="#E0E0E0"
-                 Margin="0,5" />
+            HeightRequest="1"
+            Color="#E0E0E0"
+            Margin="0,5" />
 
         <CollectionView Grid.Row="3" 
-                        x:Name="listaHistorico"
-                        EmptyView="Nenhuma dose registrada."
-                        Margin="0,10,0,0">
+                x:Name="listaHistorico"
+                EmptyView="Nenhuma dose registrada."
+                Margin="0,10,0,0">
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame BorderColor="#0056b3"
-                           CornerRadius="10"
-                           Margin="0,5"
-                           Padding="15"
-                           BackgroundColor="White">
+<CollectionView.ItemTemplate>
+<DataTemplate>
+<Frame BorderColor="#0056b3"
+CornerRadius="10"
+Margin="0,5"
+Padding="15"
+BackgroundColor="White">
 
-                        <Grid ColumnDefinitions="*, Auto, Auto" RowDefinitions="Auto,Auto">
+<Grid ColumnDefinitions="*, Auto, Auto" RowDefinitions="Auto,Auto">
 
-                            <VerticalStackLayout Grid.Row="0" Grid.Column="0">
-                                <Label Text="Medicamento" FontSize="11" TextColor="Gray" />
-                                <Label Text="{Binding NomeMedicamento}"
-                                       FontAttributes="Bold"
-                                       FontSize="18"
-                                       TextColor="#333333" />
-                            </VerticalStackLayout>
+<VerticalStackLayout Grid.Row="0" Grid.Column="0">
+<Label Text="Medicamento" FontSize="11" TextColor="Gray" />
+<Label Text="{Binding NomeMedicamento}"
+FontAttributes="Bold"
+FontSize="18"
+TextColor="#333333" />
+</VerticalStackLayout>
 
-                            <Frame Grid.Row="0"
-       Grid.Column="1"
-       Padding="10,5"
-       CornerRadius="8"
-       BackgroundColor="{Binding StatusColor}"
-       HasShadow="False"
-       VerticalOptions="Center">
+<Frame Grid.Row="0"
+Grid.Column="1"
+Padding="10,5"
+CornerRadius="8"
+BackgroundColor="{Binding StatusColor}"
+HasShadow="False"
+VerticalOptions="Center">
 
-                                <Label FontSize="12"
-           FontAttributes="Bold"
-           TextColor="White">
-
-                                    <Label.Triggers>
-                                        <DataTrigger TargetType="Label" Binding="{Binding Tomado}" Value="True">
-                                            <Setter Property="Text" Value="Tomou" />
-                                        </DataTrigger>
-
-                                        <DataTrigger TargetType="Label" Binding="{Binding Tomado}" Value="False">
-                                            <Setter Property="Text" Value="Pendente" />
-                                        </DataTrigger>
-                                    </Label.Triggers>
-
-                                </Label>
-                            </Frame>
-
-                            <VerticalStackLayout Grid.Row="1"
-                                                 Grid.Column="0"
-                                                 Grid.ColumnSpan="3"
-                                                 Margin="0,12,0,0">
-                                <Label Text="Data e Hora" FontSize="11" TextColor="Gray" />
-                                <Label Text="{Binding DataUso, StringFormat='{}{0:dd/MM/yyyy HH:mm}'}"
-                                       FontSize="15"
-                                       FontAttributes="Italic"
-                                       TextColor="#0056b3" />
+<Label FontSize="12"
+FontAttributes="Bold"
+TextColor="White">
+  <Label.Triggers>
+  <DataTrigger TargetType="Label" Binding="{Binding Tomado}" Value="True">
+   <Setter Property="Text" Value="Tomou" />
+  </DataTrigger>
+<DataTrigger TargetType="Label" Binding="{Binding Tomado}" Value="False">
+ <Setter Property="Text" Value="Pendente" />
+ </DataTrigger>
+   </Label.Triggers>
+</Label>
+</Frame>
+<VerticalStackLayout Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="3"
+                Margin="0,12,0,0">
+            <Label Text="Data e Hora" FontSize="11" TextColor="Gray" />
+            <Label Text="{Binding DataUso, StringFormat='{}{0:dd/MM/yyyy HH:mm}'}"
+    FontSize="15"
+    FontAttributes="Italic"
+                        TextColor="#0056b3" />
                             </VerticalStackLayout>
 
                         </Grid>
