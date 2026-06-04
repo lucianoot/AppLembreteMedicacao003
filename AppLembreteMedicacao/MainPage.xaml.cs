@@ -9,439 +9,511 @@ namespace AppLembreteMedicacao;
 
 public partial class MainPage : ContentPage
 {
-// Criamos uma variável estática para controlar se o alerta já foi exibido na sessão
-private static bool _alertaExibidoNestaSessao = false;
+    // Criamos uma variável estática para controlar se o alerta já foi exibido na sessão
+    private static bool _alertaExibidoNestaSessao = false;
 
-private Medicamento _medicamentoParaEdicao;
+    private Medicamento _medicamentoParaEdicao;
 
-public MainPage()
+    public MainPage()
+    {
+        InitializeComponent();
+
+        // Registro dos botões da notificação
+        ConfigurarCategoriasDeNotificacao();
+
+        //Data mínima
+        dtInicio.MinimumDate = new DateTime(2000, 1, 1);
+        // Impede selecionar uma data futura apenas para a Data Final (V)
+        dtFim.MaximumDate = new DateTime(2100, 12, 31);
+    }
+
+    private async void OnVerHistoricoClicked(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new HistoricoDosesPage());
+    }
+
+    private void ConfigurarCategoriasDeNotificacao()
+    {
+        var acoes = new HashSet<NotificationAction>
 {
-InitializeComponent();
-
-// Registro dos botões da notificação
-ConfigurarCategoriasDeNotificacao();
-
-//Data mínima
-dtInicio.MinimumDate = new DateTime(2000, 1, 1);
-// Impede selecionar uma data futura apenas para a Data Final (V)
-dtFim.MaximumDate = new DateTime(2100, 12, 31);
-}
-    
-private async void OnVerHistoricoClicked(object sender, EventArgs e)
-{
-await Navigation.PushAsync(new HistoricoDosesPage());
-}
-
-private void ConfigurarCategoriasDeNotificacao()
-{
-var acoes = new HashSet<NotificationAction>
-{
-new NotificationAction(100) { Title = "Dose Tomada" },
-new NotificationAction(101) { Title = "Pular Dose" }
+//  O segundo plano agora é controlado no agendamento da dose!
+      new NotificationAction(100) { Title = "Dose Tomada" },
+        new NotificationAction(101) { Title = "Pular Dose" }
 };
 
-// Na v10, usamos o tipo "Status" para agrupar os botões.
-var categoria = new NotificationCategory(NotificationCategoryType.Status)
-{
-ActionList = acoes
-};
+        // Na v10/v11, usamos o tipo "Status" para agrupar os botões.
+        var categoria = new NotificationCategory(NotificationCategoryType.Status)
+        {
+            ActionList = acoes
+        };
 
-}
-private async void AoClicarSair(object sender, EventArgs e)
-{
-bool confirmar = await DisplayAlert("Sair", "Deseja realmente sair?", "Sim", "Não");
+    }
 
-if (confirmar)
-{
-// 1. Limpa o email salvo para não logar sozinho na próxima vez
-Preferences.Remove("UserEmail");
+    private async void AoClicarSair(object sender, EventArgs e)
+    {
+        bool confirmar = await DisplayAlert("Sair", "Deseja realmente sair?", "Sim", "Não");
 
-// 2. LIBERA O ALERTA: Diz ao app que na próxima vez que a MainPage abrir, o alerta deve aparecer
-AppLembreteMedicacao.MainPage._alertaExibidoNestaSessao = false;
+        if (confirmar)
+        {
+            // 1. Limpa o email salvo para não logar sozinho na próxima vez
+            Preferences.Remove("UserEmail");
 
-// 3. Volta para a tela de Login 
-App.Current.MainPage = new NavigationPage(new AppLembreteMedicacao.Views.Login());
-}
-}
+            // 2. LIBERA O ALERTA: Diz ao app que na próxima vez que a MainPage abrir, o alerta deve aparecer
+            AppLembreteMedicacao.MainPage._alertaExibidoNestaSessao = false;
+
+            // 3. Volta para a tela de Login 
+            App.Current.MainPage = new NavigationPage(new AppLembreteMedicacao.Views.Login());
+        }
+    }
     //  NOVO MÉTODO DE CLIQUE (Substitui o OnMedicamentoSelecionado)
     private async void OnMedicamentoTapped(object sender, TappedEventArgs e)
-{
-// Pega o remédio que foi passado pelo CommandParameter no XAML
-var medicamento = e.Parameter as Medicamento;
+    {
+        // Pega o remédio que foi passado pelo CommandParameter no XAML
+        var medicamento = e.Parameter as Medicamento;
 
-if (medicamento == null) return;
+        if (medicamento == null) return;
 
-// Abre o menu de opções nativo
-string acao = await DisplayActionSheet($"Opções para: {medicamento.Nome}",
-"Cancelar", "Remover", "Editar", "Gerar Ciclo 6h/6h", "Gerar Ciclo 8h/8h", "Gerar Ciclo 12h/12h", "Gerar Ciclo 24h/24h");
+        // Abre o menu de opções nativo
+        string acao = await DisplayActionSheet($"Opções para: {medicamento.Nome}",
+        "Cancelar", "Remover", "Editar", "Gerar Ciclo 6h/6h", "Gerar Ciclo 8h/8h", "Gerar Ciclo 12h/12h", "Gerar Ciclo 24h/24h");
 
-switch (acao)
-{
-case "Gerar Ciclo 6h/6h":
-await GerarCicloAutomatico(medicamento.Id, 6);
-break;
+        switch (acao)
+        {
+            case "Gerar Ciclo 6h/6h":
+                await GerarCicloAutomatico(medicamento.Id, 6);
+                break;
 
-case "Gerar Ciclo 8h/8h":
-await GerarCicloAutomatico(medicamento.Id, 8);
-break;
+            case "Gerar Ciclo 8h/8h":
+                await GerarCicloAutomatico(medicamento.Id, 8);
+                break;
 
-case "Gerar Ciclo 12h/12h":
-await GerarCicloAutomatico(medicamento.Id, 12);
-break;
+            case "Gerar Ciclo 12h/12h":
+                await GerarCicloAutomatico(medicamento.Id, 12);
+                break;
 
-case "Gerar Ciclo 24h/24h":
-await GerarCicloAutomatico(medicamento.Id, 24);
-break;
+            case "Gerar Ciclo 24h/24h":
+                await GerarCicloAutomatico(medicamento.Id, 24);
+                break;
 
-case "Editar":
-// 1. Ativa o modo de edição guardando o medicamento na variável global
-_medicamentoParaEdicao = medicamento;
+            case "Editar":
+                // 1. Ativa o modo de edição guardando o medicamento na variável global
+                _medicamentoParaEdicao = medicamento;
 
-// 2. Preenche os campos da tela com os dados atuais do remédio
-entNome.Text = medicamento.Nome;
-entDose.Text = medicamento.Dosagem;
-dtInicio.Date = medicamento.DataInicio;
-dtFim.Date = medicamento.DataFim ?? DateTime.Today;
-chkIsContinuo.IsChecked = medicamento.IsContinuo;
+                // 2. Preenche os campos da tela com os dados atuais do remédio
+                entNome.Text = medicamento.Nome;
+                entDose.Text = medicamento.Dosagem;
+                dtInicio.Date = medicamento.DataInicio;
+                dtFim.Date = medicamento.DataFim ?? DateTime.Today;
+                chkIsContinuo.IsChecked = medicamento.IsContinuo;
 
-// 3. Modifica o botão de Salvar para indicar que é uma ATUALIZAÇÃO 13/05 (V)
-btnSalvar.Text = "Atualizar Dados";
-btnSalvar.BackgroundColor = Colors.Orange; // Muda para laranja para dar destaque
+                // 3. Modifica o botão de Salvar para indicar que é uma ATUALIZAÇÃO 13/05 (V)
+                btnSalvar.Text = "Atualizar Dados";
+                btnSalvar.BackgroundColor = Colors.Orange; // Muda para laranja para dar destaque
 
-// 4. Avisa o usuário e foca no primeiro campo
-await DisplayAlert("Modo Edição", "Altere os dados e clique em Atualizar Dados.", "OK");
-entNome.Focus();
-break;
+                // 4. Avisa o usuário e foca no primeiro campo
+                await DisplayAlert("Modo Edição", "Altere os dados e clique em Atualizar Dados.", "OK");
+                entNome.Focus();
+                break;
 
-case "Remover":
-bool confirmar = await DisplayAlert("Atenção", $"Deseja interromper o tratamento de {medicamento.Nome}?", "Sim", "Não");
-if (confirmar)
-{
-                  
-// Desativa o medicamento no banco
-await App.Banco.DesativarMedicamento(medicamento);
+            case "Remover":
+                bool confirmar = await DisplayAlert("Atenção", $"Deseja interromper o tratamento de {medicamento.Nome}?", "Sim", "Não");
+                if (confirmar)
+                {
 
-// Cancela as notificações de Ciclos Automáticos 
-for (int i = 0; i < 150; i++)
-{
-LocalNotificationCenter.Current.Cancel((medicamento.Id * 1000) + i);
-}
+                    // Desativa o medicamento no banco
+                    await App.Banco.DesativarMedicamento(medicamento);
 
-await DisplayAlert("Sucesso", "Tratamento encerrado e notificações removidas.", "OK");
+                    // Cancela as notificações de Ciclos Automáticos 
+                    for (int i = 0; i < 150; i++)
+                    {
+                        LocalNotificationCenter.Current.Cancel((medicamento.Id * 1000) + i);
+                    }
 
-CarregarMedicamentos();
-}
-break;
-}
-}
-private void OnContinuoCheckedChanged(object sender, CheckedChangedEventArgs e)
-{
-// Se for contínuo (true), IsVisible da data fim será false
-dtFim.IsVisible = !e.Value;
-}
-// Método para salvar o remédio (campos da tela)
-private async void AoClicarSalvar(object sender, EventArgs e)
-{
+                    await DisplayAlert("Sucesso", "Tratamento encerrado e notificações removidas.", "OK");
 
-if (string.IsNullOrWhiteSpace(entNome.Text))
-{
-await DisplayAlert("Erro", "Por favor, preencha o nome do remédio.", "OK");
-return;
-}
-
-// VALIDAÇÃO DE DATA (Inserida aqui para travar o salvamento se estiver errado)10/05 (V)
-if (!chkIsContinuo.IsChecked && dtFim.Date < dtInicio.Date)
-{
-await DisplayAlert("Data Inválida", "A data final não pode ser anterior à data de início.", "OK");
-return;
-}
-
-try
-{
-if (_medicamentoParaEdicao == null)
-{
-// NOVO
-var novo = new Medicamento
-{
-Nome = entNome.Text,
-Dosagem = entDose.Text,
-DataInicio = dtInicio.Date,
-IsContinuo = chkIsContinuo.IsChecked,
-// Se for contínuo, DataFim é null. Se não, pega o valor do DatePicker
-DataFim = chkIsContinuo.IsChecked ? null : dtFim.Date,
-Ativo = 1,
-IntervaloHoras = 0
-};
-
-await App.Banco.InsertMedicamento(novo);
-
-// PEGA O ID REAL DO BANCO
-var ultimo = await App.Banco.GetUltimoMedicamento();
-
-await DisplayAlert("Sucesso", "Medicamento cadastrado!", "OK");
-}
-else
-{
-// EDITAR
-_medicamentoParaEdicao.Nome = entNome.Text;
-_medicamentoParaEdicao.Dosagem = entDose.Text;
-_medicamentoParaEdicao.DataInicio = dtInicio.Date;
-_medicamentoParaEdicao.IsContinuo = chkIsContinuo.IsChecked;
-_medicamentoParaEdicao.DataFim = dtFim.Date;
-
-await App.Banco.UpdateMedicamento(_medicamentoParaEdicao);
-
-await DisplayAlert("Sucesso", "Medicamento atualizado!", "OK");
-
-// Limpa modo edição
-_medicamentoParaEdicao = null;
-
-}
-
-// LIMPEZA E RESET 13/05 (V)
-
-// 1. Limpa os campos de texto
-entNome.Text = string.Empty;
-entDose.Text = string.Empty;
-
-// 2. Volta o texto do botão para "Salvar"
-btnSalvar.Text = "Salvar Medicamento";
-
-// 3. Volta a cor para o azul original do seu XAML
-btnSalvar.BackgroundColor = Color.FromArgb("#0056b3");
-
-// 4. Limpa a variável global para que o próximo clique seja um NOVO cadastro
-_medicamentoParaEdicao = null;
-
-// 5. Atualiza a lista na tela
-CarregarMedicamentos();
-}
-catch (Exception ex)
-{
-await DisplayAlert("Erro", "Não foi possível salvar: " + ex.Message, "OK");
-}
-}
-private async Task GerarCicloAutomatico(int medId, int intervalo)
-{
-try
-{
-// 1. Busca o medicamento para saber o nome e as configurações de data
-var lista = await App.Banco.GetMedicamentosAtivos();
-var medicamento = lista.FirstOrDefault(m => m.Id == medId);
-if (medicamento == null) return;
-
-medicamento.IntervaloHoras = intervalo;
-await App.Banco.UpdateMedicamento(medicamento);
-
-List<Dose> listaDosesParaBanco = new List<Dose>();
-
-// 2. DETERMINA ATÉ QUE DIA VAMOS GERAR AS NOTIFICAÇÕES
-// Se for contínuo, agendamos 30 dias. Se tiver DataFim, usamos a DataFim real (até o fim da noite, 23:59).
-DateTime dataLimite = medicamento.IsContinuo
-? DateTime.Now.AddDays(30)
-: (medicamento.DataFim?.Date.AddHours(23).AddMinutes(59) ?? DateTime.Now.AddDays(30));
-
-DateTime horaDose = DateTime.Now;
-int contadorId = 0;
-
-// 3. O LAÇO VAI AVANÇANDO DE X EM X HORAS E AGENDANDO CADA NOTIFICAÇÃO INDIVIDUALMENTE
-while (horaDose <= dataLimite)
-{
-// Cria o registro da dose para o banco local (Tabela de históricos/cronograma)
-var novaDose = new Dose
-{
-MedicamentoId = medId,
-NomeMedicamento = medicamento.Nome,
-Status = "Pendente",
-HorarioPrevisto = horaDose
-};
-listaDosesParaBanco.Add(novaDose);
-
-// Cria a requisição de notificação para esta dose específica
-var notif = new NotificationRequest
-{
-// Garante um ID único combinando o ID do remédio com o número da dose
-NotificationId = (medId * 1000) + contadorId,
-Title = "Hora do Remédio 💊",
-Description = $"Tomar {medicamento.Nome} ({medicamento.Dosagem})",
-ReturningData = medId.ToString(),
-CategoryType = NotificationCategoryType.Status,
-Schedule = new NotificationRequestSchedule
-{
-NotifyTime = horaDose // Toca exatamente neste dia e hora calculados
-},
-Android = new AndroidOptions { LaunchAppWhenTapped = true }
-};
-
-await LocalNotificationCenter.Current.Show(notif);
-
-// Avança o relógio para o próximo horário (ex: se era 08:00 e o intervalo é 6h, vira 14:00)
-horaDose = horaDose.AddHours(intervalo);
-contadorId++;
-}
-
-// 4. Salva todas as doses geradas de uma vez só no banco SQLite
-await App.Banco.InsertDoses(listaDosesParaBanco);
-
-// Mensagem customizada para o usuário
-string mensagemSucesso = medicamento.IsContinuo
-? $"Ciclo de {intervalo}h criado para os próximos 30 dias!"
-: $"Ciclo de {intervalo}h criado com sucesso até {medicamento.DataFim:dd/MM/yyyy}!";
-
-await DisplayAlert("Sucesso", mensagemSucesso, "OK");
-CarregarMedicamentos();
-}
-catch (Exception ex)
-{
-await DisplayAlert("Erro no Ciclo", "Não foi possível agendar o ciclo: " + ex.Message, "OK");
-}
-}
-
-// Botão flutuante (+)
-private async void AoClicarNovoRemedio(object sender, EventArgs e)
-{
-try
-{
-
-// Foca o cursor automaticamente no campo Nome do Remédio
-entNome.Focus();
-
-// Feedback visual simples no botão que foi clicado
-if (sender is VisualElement botao)
-{
-    await botao.ScaleTo(1.2, 100);
-    await botao.ScaleTo(1.0, 100);
-}
-}
-catch (Exception ex)
-{
-System.Diagnostics.Debug.WriteLine($"Erro ao focar: {ex.Message}");
-}
-}
-private async void AoClicarVerHistorico(object sender, EventArgs e)
-{
-await Navigation.PushAsync(new HistoricoDosesPage());
-}
-protected override async void OnAppearing()
-{
-base.OnAppearing();
-
-//Se ele nunca aceitou, exibe o alerta
-if (!_alertaExibidoNestaSessao)
-{
-_alertaExibidoNestaSessao = true;
-
-await DisplayAlert("⚠️ Importante",
-    "Os dados e lembretes gerados por este aplicativo são informativos. O monitoramento digital é um aliado ao tratamento, mas não anula a necessidade de consultas médicas periódicas e supervisão profissional.",
-    "Entendi");
-}
-// 1. Busca o nome salvo no login/cadastro. 
-// Se não houver nome, exibe "Usuário".
-string nomeLogado = Preferences.Get("NomeUsuario", "Usuário");
-
-// 2. Atualiza a Label de boas-vindas
-if (lblBoasVindas != null)
-{
-lblBoasVindas.Text = $"Bem-vindo(a), {nomeLogado}!";
-}
-
-// 3. Carrega a lista de medicamentos do banco de dados de forma assíncrona
-await CarregarMedicamentos();
-}
-
-private async Task CarregarMedicamentos()
-{
-try
-{
-// 1. Busca os remédios ativos cadastrados no banco de dados
-var listaCompleta = await App.Banco.GetMedicamentosAtivos();
-
-// 2. Pega a data de hoje (meia-noite) para ignorar os minutos na comparação
-DateTime hoje = DateTime.Today;
-
-// 3. FILTRO: Mantém apenas os remédios que são de uso contínuo OR que a DataFim ainda não passou de hoje
-var listaFiltrada = listaCompleta.Where(m => m.IsContinuo || (m.DataFim != null && m.DataFim.Value.Date >= hoje)).ToList();
-
-// 4. Alimenta a sua CollectionView apenas com os medicamentos válidos
-listaMedicamentos.ItemsSource = listaFiltrada;
-}
-catch (Exception ex)
-{
-// Registra o erro caso algo dê errado na busca
-System.Diagnostics.Debug.WriteLine($"Erro ao carregar: {ex.Message}");
+                    await CarregarMedicamentos();
+                }
+                break;
         }
-}
+    }
+    private void OnContinuoCheckedChanged(object sender, CheckedChangedEventArgs e)
+    {
+        // Se for contínuo (true), IsVisible da data fim será false
+        dtFim.IsVisible = !e.Value;
+    }
+    // Método para salvar o remédio (campos da tela)
+    private async void AoClicarSalvar(object sender, EventArgs e)
+    {
 
-private async void ToolbarItem_Clicked(object sender, EventArgs e)
-{
-try
-{
-var lista = await App.Banco.GetMedicamentos();
-if (lista == null || !lista.Any())
-{
-await DisplayAlert("Prontuário", "Não há registros para compartilhar.", "OK");
-return;
-}
+        if (string.IsNullOrWhiteSpace(entNome.Text))
+        {
+            await DisplayAlert("Erro", "Por favor, preencha o nome do remédio.", "OK");
+            return;
+        }
 
-// Alerta de privacidade
-bool desejaCompartilhar = await DisplayAlert(
-"⚠️ Aviso de Privacidade",
-"O prontuário contém dados sensíveis sobre a sua saúde e histórico de medicações. Deseja realmente prosseguir com o compartilhamento?",
-"Sim, compartilhar",
-"Cancelar");
+        // VALIDAÇÃO DE DATA (Inserida aqui para travar o salvamento se estiver errado)10/05 (V)
+        if (!chkIsContinuo.IsChecked && dtFim.Date < dtInicio.Date)
+        {
+            await DisplayAlert("Data Inválida", "A data final não pode ser anterior à data de início.", "OK");
+            return;
+        }
 
-if (desejaCompartilhar == false)
-{
-return;
-}
+        try
+        {
+            if (_medicamentoParaEdicao == null)
+            {
+                // NOVO
+                var novo = new Medicamento
+                {
+                    Nome = entNome.Text,
+                    Dosagem = entDose.Text,
+                    DataInicio = dtInicio.Date,
+                    IsContinuo = chkIsContinuo.IsChecked,
+                    // Se for contínuo, DataFim é null. Se não, pega o valor do DatePicker
+                    DataFim = chkIsContinuo.IsChecked ? null : dtFim.Date,
+                    Ativo = 1,
+                    IntervaloHoras = 0
+                };
 
-string cabecalho = $"📋 MEU PRONTUÁRIO - {DateTime.Now:dd/MM/yyyy}\n";
-cabecalho += "------------------------------------------\n\n";
-string corpo = "";
+                await App.Banco.InsertMedicamento(novo);
 
-foreach (var m in lista)
-{
-string status = m.Ativo == 1 ? "✅ Registrado" : "❌ Inativo";
-string textoDataFim = "";
+                // PEGA O ID REAL DO BANCO
+                var ultimo = await App.Banco.GetUltimoMedicamento();
 
-// --- VALIDAÇÃO REVERSA (Guard Clauses) ---
-if (m.IsContinuo)
-{
-textoDataFim = "Uso Contínuo";
-}
-else if (m.DataFim == null || m.DataFim == DateTime.MinValue)
-{
-textoDataFim = "Uso Contínuo";
-}
-else
-{
-textoDataFim = m.DataFim.Value.ToString("dd/MM/yyyy");
-}
+                await DisplayAlert("Sucesso", "Medicamento cadastrado!", "OK");
+            }
+            else
+            {
+                // EDITAR
+                _medicamentoParaEdicao.Nome = entNome.Text;
+                _medicamentoParaEdicao.Dosagem = entDose.Text;
+                _medicamentoParaEdicao.DataInicio = dtInicio.Date;
+                _medicamentoParaEdicao.IsContinuo = chkIsContinuo.IsChecked;
+                _medicamentoParaEdicao.DataFim = chkIsContinuo.IsChecked ? null : dtFim.Date;
 
-corpo += $"💊 Remédio: {m.Nome}\n   " +
-$"Dose: {m.Dosagem}\n   " +
-$"Início: {m.DataInicio:dd/MM/yyyy}\n   " +
-$"Término: {textoDataFim}\n   " +
-$"Status: {status}\n";
-corpo += "------------------------------------------\n";
-}
+                await App.Banco.UpdateMedicamento(_medicamentoParaEdicao);
 
-string hashSeguro = SecurityHelper.GerarHash(corpo);
-string textoFinal = cabecalho + corpo + $"\nHash de Segurança: {hashSeguro}\n\n" +
-$"Nota: O código acima é uma assinatura digital gerada pelo aplicativo para garantir a integridade e a origem autêntica deste prontuário.\n\n" +
-$"Gerado pelo App Meu Remédio.";
+                await DisplayAlert("Sucesso", "Medicamento updated!", "OK");
 
-await Share.Default.RequestAsync(new ShareTextRequest
-{
-Title = "Compartilhar Prontuário",
-Text = textoFinal
-});
-}
-catch (Exception ex)
-{
-await DisplayAlert("Erro", ex.Message, "OK");
-}
-}
-}
+                // Limpa modo edição
+                _medicamentoParaEdicao = null;
+
+            }
+
+            // LIMPEZA E RESET 13/05 (V)
+
+            // 1. Limpa os campos de texto
+            entNome.Text = string.Empty;
+            entDose.Text = string.Empty;
+
+            // 2. Volta o texto do botão para "Salvar"
+            btnSalvar.Text = "Salvar Medicamento";
+
+            // 3. Volta a cor para o azul original do seu XAML
+            btnSalvar.BackgroundColor = Color.FromArgb("#0056b3");
+
+            // 4. Limpa a variável global para que o próximo clique seja um NOVO cadastro
+            _medicamentoParaEdicao = null;
+
+            // 5. Atualiza a lista na tela
+            await CarregarMedicamentos();
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro", "Não foi possível salvar: " + ex.Message, "OK");
+        }
+    }
+    private async Task GerarCicloAutomatico(int medId, int intervalo)
+    {
+        try
+        {
+            // 1. Busca o medicamento para saber o nome e as configurações de data
+            var lista = await App.Banco.GetMedicamentosAtivos();
+            var medicamento = lista.FirstOrDefault(m => m.Id == medId);
+            if (medicamento == null) return;
+
+            medicamento.IntervaloHoras = intervalo;
+            await App.Banco.UpdateMedicamento(medicamento);
+
+            List<Dose> listaDosesParaBanco = new List<Dose>();
+
+            // 2. DETERMINA ATÉ QUE DIA VAMOS GERAR AS NOTIFICAÇÕES
+            // Se for contínuo, agendamos 30 dias. Se tiver DataFim, usamos a DataFim real (até o fim da noite, 23:59).
+            DateTime dataLimite = medicamento.IsContinuo
+            ? DateTime.Now.AddDays(30)
+            : (medicamento.DataFim?.Date.AddHours(23).AddMinutes(59) ?? DateTime.Now.AddDays(30));
+
+            DateTime horaDose = DateTime.Now;
+            int contadorId = 0;
+
+            // 3. O LAÇO VAI AVANÇANDO DE X EM X HORAS E AGENDANDO CADA NOTIFICAÇÃO INDIVIDUALMENTE
+            while (horaDose <= dataLimite)
+            {
+                // Cria o registro da dose para o banco local (Tabela de históricos/cronograma)
+                var novaDose = new Dose
+                {
+                    MedicamentoId = medId,
+                    NomeMedicamento = medicamento.Nome,
+                    Status = "Pendente",
+                    HorarioPrevisto = horaDose
+                };
+                listaDosesParaBanco.Add(novaDose);
+
+                //  MUDANÇA: Customização de mensagens para a NOTIFICAÇÃO do Último
+                string tituloNotif = "Hora do Remédio 💊";
+                string descNotif = $"Tomar {medicamento.Nome} ({medicamento.Dosagem})";
+
+                if (!medicamento.IsContinuo && medicamento.DataFim.HasValue && horaDose.Date == medicamento.DataFim.Value.Date)
+                {
+                    tituloNotif = "🎉 Último Dia do Tratamento!";
+                    descNotif = $"Reta final do seu {medicamento.Nome}! Não se esqueça de tomar a última dose hoje!";
+                }
+
+                // Cria a requisição de notificação para esta dose específica
+                var notif = new NotificationRequest
+                {
+                    // Garante um ID único combinando o ID do remédio com o número da dose
+                    NotificationId = (medId * 1000) + contadorId,
+                    Title = tituloNotif,
+                    Description = descNotif,
+                    ReturningData = medId.ToString(),
+                    CategoryType = NotificationCategoryType.Status,
+                    Schedule = new NotificationRequestSchedule
+                    {
+                        NotifyTime = horaDose // Toca exatamente neste dia e hora calculados
+                    },
+                    Android = new AndroidOptions { LaunchAppWhenTapped = false } // Background impede pular na tela 04/06
+                };
+
+                await LocalNotificationCenter.Current.Show(notif);
+
+                // Avança o relógio para o próximo horário (ex: se era 08:00 e o intervalo é 6h, vira 14:00)
+                horaDose = horaDose.AddHours(intervalo);
+                contadorId++;
+            }
+
+            // 4. Salva todas as doses geradas de uma vez só no banco SQLite
+            await App.Banco.InsertDoses(listaDosesParaBanco);
+
+            // Mensagem customizada para o usuário
+            string mensagemSucesso = medicamento.IsContinuo
+            ? $"Ciclo de {intervalo}h criado para os próximos 30 dias!"
+            : $"Ciclo de {intervalo}h criado com sucesso até {medicamento.DataFim:dd/MM/yyyy}!";
+
+            await DisplayAlert("Sucesso", mensagemSucesso, "OK");
+            await CarregarMedicamentos();
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro no Ciclo", "Não foi possível agendar o ciclo: " + ex.Message, "OK");
+        }
+    }
+
+    // Botão flutuante (+)
+    private async void AoClicarNovoRemedio(object sender, EventArgs e)
+    {
+        try
+        {
+
+            // Foca o cursor automaticamente no campo Nome do Remédio
+            entNome.Focus();
+
+            // Feedback visual simples no botão que foi clicado
+            if (sender is VisualElement botao)
+            {
+                await botao.ScaleTo(1.2, 100);
+                await botao.ScaleTo(1.0, 100);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao focar: {ex.Message}");
+        }
+    }
+    private async void AoClicarVerHistorico(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new HistoricoDosesPage());
+    }
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        //Se ele nunca aceitou, exibe o alerta
+        if (!_alertaExibidoNestaSessao)
+        {
+            _alertaExibidoNestaSessao = true;
+
+            await DisplayAlert("⚠️ Importante",
+                "Os dados e lembretes gerados por este aplicativo são informativos. O monitoramento digital é um aliado ao tratamento, mas não anula a necessidade de consultas médicas periódicas e supervisão profissional.",
+                "Entendi");
+        }
+        // 1. Busca o nome salvo no login/cadastro. 
+        // Se não houver nome, exibe "Usuário".
+        string nomeLogado = Preferences.Get("NomeUsuario", "Usuário");
+
+        // 2. Atualiza a Label de boas-vindas
+        if (lblBoasVindas != null)
+        {
+            lblBoasVindas.Text = $"Bem-vindo(a), {nomeLogado}!";
+        }
+
+        // 3. Carrega a lista de medicamentos do banco de dados de forma assíncrona
+        await CarregarMedicamentos();
+
+        // 👉 CHAMADA DO POP-UP FESTIVO: Executa ao abrir a tela 04/06
+        await VerificarUltimoDia();
+    }
+
     
-    
+    //Cria o Pop-up 
+    private async Task VerificarUltimoDia()
+    {
+        try
+        {
+            var remedios = await App.Banco.GetMedicamentosAtivos();
+            DateTime hoje = DateTime.Today;
+
+            // Lista para acumular os textos dos remédios que vencem hoje
+            List<string> remediosDoUltimoDia = new List<string>();
+            // Lista para controlar quais chaves de alerta vamos salvar se o usuário clicar em OK
+            List<string> chavesParaSalvar = new List<string>();
+
+            foreach (var remedio in remedios)
+            {
+                if (!remedio.IsContinuo && remedio.DataFim.HasValue && remedio.DataFim.Value.Date == hoje)
+                {
+                    string chaveAlerta = $"AlertaDia_{remedio.Id}_{hoje:yyyyMMdd}";
+                    bool jaAlertou = Preferences.Get(chaveAlerta, false);
+
+                    if (!jaAlertou)
+                    {
+                        // Adiciona o nome do remédio formatado em CAIXA ALTA e com destaque na lista
+                        remediosDoUltimoDia.Add($"• \"{remedio.Nome.ToUpper()}\"");
+                        chavesParaSalvar.Add(chaveAlerta);
+                    }
+                }
+            }
+
+            // Se houver pelo menos um remédio terminando hoje que ainda não foi alertado
+            if (remediosDoUltimoDia.Count > 0)
+            {
+                string titulo = "Aviso de Tratamento";
+
+                // Monta o texto dependendo da quantidade de remédios (singular ou plural)
+                string textoMensagem = remediosDoUltimoDia.Count == 1
+                    ? "Atenção: Hoje é o último dia do seu medicamento:\n\n"
+                    : "Atenção: Hoje é o último dia dos seguintes medicamentos:\n\n";
+
+                // Junta a lista de remédios pulando linha entre eles
+                string mensagemFinal = textoMensagem + string.Join("\n", remediosDoUltimoDia);
+
+                // Exibe o Pop-up único com a listagem completa
+                await DisplayAlert(titulo, mensagemFinal, "OK");
+
+                // Salva todas as chaves no Preferences para não repetir o alerta nesta data
+                foreach (var chave in chavesParaSalvar)
+                {
+                    Preferences.Set(chave, true);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao rodar o alerta: {ex.Message}");
+        }
+    }
+    private async Task CarregarMedicamentos()
+    {
+        try
+        {
+            // 1. Busca os remédios ativos cadastrados no banco de dados
+            var listaCompleta = await App.Banco.GetMedicamentosAtivos();
+
+            // 2. Pega a data de hoje (meia-noite) para ignorar os minutos na comparação
+            DateTime hoje = DateTime.Today;
+
+            // 3. FILTRO: Mantém apenas os remédios que são de uso contínuo OR que a DataFim ainda não passou de hoje
+            var listaFiltrada = listaCompleta.Where(m => m.IsContinuo || (m.DataFim != null && m.DataFim.Value.Date >= hoje)).ToList();
+
+            // 4. Alimenta a sua CollectionView apenas com os medicamentos válidos
+            listaMedicamentos.ItemsSource = listaFiltrada;
+        }
+        catch (Exception ex)
+        {
+            // Registra o erro caso algo dê errado na busca
+            System.Diagnostics.Debug.WriteLine($"Erro ao carregar: {ex.Message}");
+        }
+    }
+
+    private async void ToolbarItem_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var lista = await App.Banco.GetMedicamentos();
+            if (lista == null || !lista.Any())
+            {
+                await DisplayAlert("Prontuário", "Não há registros para compartilhar.", "OK");
+                return;
+            }
+
+            // Alerta de privacidade
+            bool desejaCompartilhar = await DisplayAlert(
+            "⚠️ Aviso de Privacidade",
+            "O prontuário contém dados sensíveis sobre a sua saúde e histórico de medicações. Deseja realmente prosseguir com o compartilhamento?",
+            "Sim, compartilhar",
+            "Cancelar");
+
+            if (desejaCompartilhar == false)
+            {
+                return;
+            }
+
+            string cabecalho = $"📋 MEU PRONTUÁRIO - {DateTime.Now:dd/MM/yyyy}\n";
+            cabecalho += "------------------------------------------\n\n";
+            string corpo = "";
+
+            foreach (var m in lista)
+            {
+                string status = m.Ativo == 1 ? "✅ Registrado" : "❌ Inativo";
+                string textoDataFim = "";
+
+                // --- VALIDAÇÃO REVERSA (Guard Clauses) ---
+                if (m.IsContinuo)
+                {
+                    textoDataFim = "Uso Contínuo";
+                }
+                else if (m.DataFim == null || m.DataFim == DateTime.MinValue)
+                {
+                    textoDataFim = "Uso Contínuo";
+                }
+                else
+                {
+                    textoDataFim = m.DataFim.Value.ToString("dd/MM/yyyy");
+                }
+
+                corpo += $"💊 Remédio: {m.Nome}\n    " +
+                $"Dose: {m.Dosagem}\n    " +
+                $"Início: {m.DataInicio:dd/MM/yyyy}\n    " +
+                $"Término: {textoDataFim}\n    " +
+                $"Status: {status}\n";
+                corpo += "------------------------------------------\n";
+            }
+
+            string hashSeguro = SecurityHelper.GerarHash(corpo);
+            string textoFinal = cabecalho + corpo + $"\nHash de Segurança: {hashSeguro}\n\n" +
+            $"Nota: O código acima é uma assinatura digital gerada pelo aplicativo para garantir a integridade e a origem autêntica deste prontuário.\n\n" +
+            $"Gerado pelo App Meu Remédio.";
+
+            await Share.Default.RequestAsync(new ShareTextRequest
+            {
+                Title = "Compartilhar Prontuário",
+                Text = textoFinal
+            });
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro", ex.Message, "OK");
+        }
+    }
+}
+
