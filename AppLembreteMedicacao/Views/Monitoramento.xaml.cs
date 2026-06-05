@@ -39,7 +39,7 @@ string perfil = Preferences.Get("TipoPerfil", "Usuário");
 if (perfil == "Médico")
 {
 lblSaudacaoLogado.Text = $"Bem-vindo(a) {nomeLogado}!";
-lblFraseApoio.Text = "Acompanhe aqui a evolução do tratamento do seu paciente.";
+lblFraseApoio.Text = "Acompanhe abaixo a evolução do tratamento do seu paciente.";
 }
 else if (perfil == "Responsável")
 {

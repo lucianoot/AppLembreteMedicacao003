@@ -1,8 +1,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="AppLembreteMedicacao.Views.Monitoramento"
-             Title="Monitoramento"
-             BackgroundColor="White">
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        x:Class="AppLembreteMedicacao.Views.Monitoramento"
+        Title="Monitoramento"
+        BackgroundColor="White">
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Sair" Clicked="OnSairClicked" />
@@ -11,45 +11,40 @@
     <ScrollView>
         <VerticalStackLayout Padding="30" Spacing="15">
             <Label x:Name="lblSaudacaoLogado"
-    FontSize="22"
-    FontAttributes="Bold"
-    TextColor="#2563EB"
-    HorizontalOptions="Center"
-    Margin="0,20" />
+FontSize="22"
+FontAttributes="Bold"
+TextColor="#2563EB"
+HorizontalOptions="Center"
+Margin="0,20" />
 
 
             <Label x:Name="lblFraseApoio" 
-    FontSize="12" 
-    TextColor="#64748B" 
-    LineBreakMode="WordWrap" />
+FontSize="12" 
+TextColor="Gray"
+LineBreakMode="WordWrap" />
 
             <Label Text="RELATÓRIO DE ADESÃO"
-    FontSize="14"
-    CharacterSpacing="2"
-    FontAttributes="Bold"
-    TextColor="Gray"
-    HorizontalOptions="Center" />
+FontSize="14"
+CharacterSpacing="2"
+FontAttributes="Bold"
+TextColor="Gray"
+HorizontalOptions="Center" />
 
             <Label x:Name="lblNomePaciente"
-    Text="Carregando..."
-    FontSize="24"
-    FontAttributes="Bold"
-    TextColor="#2563EB"
-    HorizontalOptions="Center"
-    Margin="0,0,0,10" />
+Text="Carregando..."
+FontSize="24"
+FontAttributes="Bold"
+TextColor="#2563EB"
+HorizontalOptions="Center"
+Margin="0,0,0,10" />
 
             <BoxView HeightRequest="1" Color="#E0E0E0" Margin="0,5" />
 
             <Label Text="Adesão por Medicamento" 
-    FontSize="18" 
-    FontAttributes="Bold" 
-    TextColor="#0056b3"
-    Margin="0,10,0,0" />
-            <Label Text="Acompanhe o desempenho do seu tratamento abaixo:"
-            FontSize="13"
-            TextColor="Gray"
-            Margin="0,0,0,10" />
-
+FontSize="18" 
+FontAttributes="Bold" 
+TextColor="#0056b3"
+Margin="0,10,0,0" />
 
             <CollectionView x:Name="listaEstatisticas" HeightRequest="150">
                 <CollectionView.ItemsLayout>
@@ -58,17 +53,17 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Frame WidthRequest="200" Padding="10" CornerRadius="15" 
-                        BackgroundColor="White"
-                        BorderColor="#0056b3"
-                        HasShadow="True">
+            BackgroundColor="White"
+            BorderColor="#0056b3"
+            HasShadow="True">
                             <VerticalStackLayout Spacing="6">
                                 <Label Text="{Binding Nome}" FontAttributes="Bold" LineBreakMode="TailTruncation" TextColor="Gray" />
                                 <Label Text="{Binding StatusTexto}" FontSize="9" FontAttributes="Bold" TextColor="{Binding CorStatusTexto}" />
                                 <Label Text="{Binding Percentual, StringFormat='{0:P0} Adesão'}"
-                                FontSize="15" FontAttributes="Bold" TextColor="{Binding CorAdesao}" />
+                    FontSize="15" FontAttributes="Bold" TextColor="{Binding CorAdesao}" />
                                 <ProgressBar Progress="{Binding Percentual}" 
-                                        ProgressColor="{Binding CorAdesao}" 
-                                        HeightRequest="8" />
+                            ProgressColor="{Binding CorAdesao}" 
+                            HeightRequest="8" />
                                 <Label Text="{Binding Tomadas, StringFormat='{0} tomadas'}" FontSize="11" TextColor="Gray" />
                                 <Label Text="{Binding Total, StringFormat='de {0} registros'}" FontSize="11" TextColor="Gray" />
                             </VerticalStackLayout>
@@ -80,9 +75,11 @@
             <BoxView HeightRequest="10" Color="Transparent" />
 
 
-            <Label Text="Histórico Detalhado" FontSize="16" 
+            <Label Text="Histórico Detalhado" 
+FontSize="18" 
 FontAttributes="Bold" 
-TextColor="#0056b3"/>
+TextColor="#0056b3"
+Margin="0,10,0,0" />
 
             <CollectionView x:Name="listaHistorico">
                 <CollectionView.ItemTemplate>
@@ -90,17 +87,17 @@ TextColor="#0056b3"/>
                         <Frame Margin="0,5" Padding="10" CornerRadius="10" BorderColor="#2563EB" BackgroundColor="White">
                             <VerticalStackLayout>
                                 <Label Text="{Binding NomeMedicamento}" 
-                                FontAttributes="Bold" 
-                                FontSize="16" 
-                                TextColor="Gray"/>
+                    FontAttributes="Bold" 
+                    FontSize="16" 
+                    TextColor="Gray"/>
 
 
                                 <Label Text="{Binding DataUso}" 
-                                TextColor="Gray" />
+                    TextColor="Gray" />
 
                                 <Label Text="{Binding TomadoTexto}" 
-                                FontAttributes="Bold" 
-                                TextColor="{Binding CorStatus}"/>
+                    FontAttributes="Bold" 
+                    TextColor="{Binding CorStatus}"/>
                             </VerticalStackLayout>
                         </Frame>
                     </DataTemplate>
