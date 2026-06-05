@@ -96,8 +96,10 @@ CorStatus = h.Tomado ? Colors.Green : Colors.Red
 
 listaHistorico.ItemsSource = listaFormatada;
 var medicamentosAtuais = await App.Banco.GetMedicamentos();
+DateTime hoje = DateTime.Today;
+
 // 2.Cálculo de Adesão por Medicamento
-var resumoAdesao = listaBruta
+                var resumoAdesao = listaBruta
 .GroupBy(h => h.NomeMedicamento)
 .Select(g =>
 {
@@ -105,43 +107,60 @@ var resumoAdesao = listaBruta
 var medNoBanco = medicamentosAtuais.FirstOrDefault(m => m.Nome == g.Key);
 bool excluido = medNoBanco == null || medNoBanco.Ativo == 0;
 bool continuo = medNoBanco != null && medNoBanco.IsContinuo;
+bool finalizado = medNoBanco != null && !continuo && medNoBanco.DataFim != null && medNoBanco.DataFim.Value.Date < hoje;
 
-int total = g.Count();
+    int total = g.Count();
 int tomadas = g.Count(x => x.Tomado);
 double perc = total > 0 ? (double)tomadas / total : 0;
 
-// Lógica de texto de status dinâmica
-string textoStatus;
-if (excluido)
-textoStatus = "EXCLUÍDO";
-else if (continuo)
-textoStatus = "USO CONTÍNUO";
-else
-textoStatus = "EM TRATAMENTO";
+    // Lógica de texto de status dinâmica
+    string textoStatus;
+    Color corStatusTexto;
 
-return new
-{
-Nome = g.Key,
-Total = total,
-Tomadas = tomadas,
-Percentual = perc,
-CorAdesao = perc >= 0.8 ? Colors.Green : Colors.Orange,
+    if (excluido)
+    {
+        textoStatus = "EXCLUÍDO";
+        corStatusTexto = Colors.Red;
+    }
+    else if (finalizado)
+    {
+        textoStatus = "FINALIZADO";
+        corStatusTexto = Colors.Purple; 
+    }
+    else if (continuo)
+    {
+        textoStatus = "USO CONTÍNUO";
+        corStatusTexto = Colors.DarkBlue;
+    }
+    else
+    {
+        textoStatus = "EM TRATAMENTO";
+        corStatusTexto = Color.FromArgb("#2563EB"); 
+    }
 
-StatusTexto = textoStatus,
-CorStatusTexto = excluido ? Colors.Red : (continuo ? Colors.DarkBlue : Color.FromArgb("#2563EB")),
-Opacidade = excluido ? 0.5 : 1.0
-};
+    return new
+    {
+        Nome = g.Key,
+        Total = total,
+        Tomadas = tomadas,
+        Percentual = perc,
+        CorAdesao = perc >= 0.8 ? Colors.Green : Colors.Orange,
+
+        StatusTexto = textoStatus,
+        CorStatusTexto = corStatusTexto,
+        Opacidade = (excluido || finalizado) ? 0.6 : 1.0 
+    };
 })
-.ToList();
+            .ToList();
 
-listaEstatisticas.ItemsSource = resumoAdesao;
-}
-}
-catch (Exception ex)
-{
-await DisplayAlert("Erro", "Falha ao processar monitoramento: " + ex.Message, "OK");
-}
-}
+                listaEstatisticas.ItemsSource = resumoAdesao;
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erro", "Falha ao processar monitoramento: " + ex.Message, "OK");
+        }
+    }
 private async void OnSairClicked(object sender, EventArgs e)
 {
 bool confirm = await DisplayAlert("Sair", "Deseja realmente deslogar?", "Sim", "Não");
